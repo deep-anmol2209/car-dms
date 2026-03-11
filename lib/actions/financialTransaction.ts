@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
-import { FinancialTransaction } from '@/types/invoice';
+import { CreateFinancialTransactionPayload, FinancialTransaction } from '@/types/invoice';
 
 /* ============================================================================
    VALIDATION SCHEMA
@@ -24,7 +24,7 @@ const paymentSchema = z.object({
   notes: z.string().optional(),
 });
 
-export async function createPayment(payload: unknown) {
+export async function createPayment(payload: CreateFinancialTransactionPayload) {
   const supabase = await createClient();
 
   const validated = paymentSchema.parse(payload);

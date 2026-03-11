@@ -139,15 +139,18 @@ export const invoiceObjectSchema = z.object({
 /* ============================================================================
    Financial Transaction DB Type
    ============================================================================ */
-export const PAYMENT_CATEGORIES = [
-  'Down Payment',
-  'Trade-in',
-  'Cash',
-  'Credit Card',
-  'Check',
-  'Other',
+export const TRANSACTION_CATEGORIES = [
+  'Sold',
+  'Warranty',
+   'Insurance',
 ] as const;
-
+export const PAYMENT_CATEGORIES = [
+  'Cash',
+  'UPI',
+  'Card',
+  'Bank Transfer',
+  'Cheque',
+] as const;
 export type PaymentCategory =
   (typeof PAYMENT_CATEGORIES)[number];
 
@@ -246,9 +249,11 @@ export type UpdateInvoicePayload = {
 
 export type CreateFinancialTransactionPayload = {
   invoice_id: string;
-  category: PaymentCategory;
+  category: string;
   amount: number;
+  payment_method: PaymentCategory;
   description: string | null;
+  reference_id: string | null,
   transaction_date: string;
 };
 

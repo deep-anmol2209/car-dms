@@ -23,7 +23,7 @@ type DeleteLeadContext = {
 /* -------------------------------------------------------------------------- */
 /*                                API FUNCTIONS                                */
 /* -------------------------------------------------------------------------- */
-async function fetchLeads(filters?: Record<string, any>): Promise<Lead[]> {
+async function fetchLeads(filters?: Record<string, any>): Promise<LeadView[]> {
   const params = new URLSearchParams();
 
   if (filters?.search) params.append("search", filters.search);
@@ -126,7 +126,7 @@ export const leadKeys = {
 
 // Get all leads
 export function useLeads(filters?: Record<string, any>) {
-  return useQuery<Lead[], Error>({
+  return useQuery<LeadView[], Error>({
     queryKey: leadKeys.list(filters),
     queryFn: () => fetchLeads(filters),
     staleTime: 1000 * 60 * 5,

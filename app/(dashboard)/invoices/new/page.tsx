@@ -413,6 +413,8 @@ import { LineItemsCard } from '@/components/invoices/line-items-card';
 import { InvoicePreview } from '@/components/invoices/invoice-preview';
 import { useCustomers } from '@/hooks/use-customers';
 import { InvoiceNotesCard } from '@/components/invoices/invoice-notes-card';
+import { Customer } from '@/types/customers';
+import { Vehicle } from '@/types/inventory';
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -501,8 +503,8 @@ const handleVehicleChange = (vehicle?: { retail_price: number }) => {
   };
 
   // Get selected entities for preview
-  const selectedCustomer = customers?.find((c) => c.id === watchedValues.customer_id);
-  const selectedVehicle = vehicles?.find((v) => v.id === watchedValues.vehicle_id);
+  const selectedCustomer = customers?.find((c: Customer) => c.id === watchedValues.customer_id);
+  const selectedVehicle = vehicles?.find((v: Vehicle) => v.id === watchedValues.vehicle_id);
 
   return (
     <div className="p-6">

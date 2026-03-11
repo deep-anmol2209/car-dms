@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Lead, LeadFormData } from "@/types/leads";
+import type { Lead, LeadFormData, LeadView } from "@/types/leads";
 
 /* -------------------------------------------------------------------------- */
 /*                                   FETCH                                    */
@@ -95,7 +95,7 @@ type LeadFilters = {
 
 //   return data;
 // }
-export async function getLeads(filters: LeadFilters = {}) {
+export async function getLeads(filters: LeadFilters = {}): Promise<LeadView[]> {
   const supabase = await createClient();
 
   const { search = "", status = "", source = "" } = filters;
@@ -126,7 +126,7 @@ export async function getLeads(filters: LeadFilters = {}) {
   if (error) throw new Error(error.message);
 
   // 🔥 Transform flat view into LeadView structure
-  const transformed = data.map((row) => ({
+  const transformed : LeadView[]= data.map((row) => ({
     id: row.id,
     status: row.status,
     source: row.source,
@@ -146,6 +146,7 @@ export async function getLeads(filters: LeadFilters = {}) {
           id: row.interest_vehicle_id,
           make: row.vehicle_make,
           model: row.vehicle_model,
+         year: row.vehicle_year
         }
       : null,
 

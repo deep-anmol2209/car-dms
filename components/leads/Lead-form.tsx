@@ -37,6 +37,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { Customer } from "@/types/customers";
+import { User } from "@/types/user";
 /**
  * Zod Schema for validation
  * Defines the shape and rules of the form
@@ -84,7 +86,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
     isError: isUsersError,
   } = useUsers();
   
-  const staffUsers = users.filter((user) => user.role === 'Staff');
+  const staffUsers = users.filter((user: User) => user.role === 'Staff');
 
   const { isSubmitting } = form.formState;
   const { data: vehicles = [], isLoading } = useVehicles();
@@ -148,7 +150,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
             </SelectItem>
           )}
 
-          {customers.map((customer) => (
+          {customers.map((customer: Customer) => (
             <SelectItem key={customer.id} value={customer.id}>
               {customer.name}
               {customer.phone ? ` • ${customer.phone}` : ""}
@@ -309,7 +311,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
           )}
 
           {/* Users list */}
-          {staffUsers.map((user) => (
+          {staffUsers.map((user: User ) => (
             <SelectItem key={user.id} value={user.id}>
               {user.full_name}
               {user.role ? ` • ${user.role}` : ""}

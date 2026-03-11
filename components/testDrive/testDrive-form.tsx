@@ -59,7 +59,7 @@ import { useEffect, useState } from "react";
 import { ImageUploader } from "../imagekit/fileUpload";
 import { uploadToImageKit } from "@/helper/upload";
 import { Customer } from "@/types/customers";
-
+import Image from "next/image";
 /* ============================================================================
    Component
    ============================================================================ */
@@ -428,7 +428,8 @@ const { data: vehicles = [], isLoading } = useVehicles();
       />
 
       {licensePreview && (
-        <img
+        <Image
+        alt="licese"
           src={licensePreview}
           className="mt-2 h-24 rounded border object-cover"
         />
@@ -456,7 +457,8 @@ const { data: vehicles = [], isLoading } = useVehicles();
 
 
       {signaturePreview && (
-        <img
+        <Image
+        alt="signature"
           src={signaturePreview}
           className="mt-2 h-24 rounded border object-cover"
         />

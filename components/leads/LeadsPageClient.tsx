@@ -11,6 +11,9 @@ import { LeadsTable } from "@/components/leads/Lead-table";
 import { LeadsFilter } from "@/components/leads/Leads-filter";
 import { useLeads } from "@/hooks/use-leads";
 import { useDebounce } from "@/hooks/use-debounce";
+import { Lead, LeadView } from "@/types/leads";
+
+
 
 export default function LeadsPageClient() {
   const router = useRouter();
@@ -115,3 +118,12 @@ if (isLoading && leads.length === 0) {
     </div>
   );
 }
+
+
+// export function mapLeadToView(lead: Lead): LeadView {
+//   return {
+//     ...lead,
+//     customer: lead.customer?.name ?? "Unknown",
+//     interest_vehicle: lead.vehicle?.model ?? "N/A",
+//   };
+// }

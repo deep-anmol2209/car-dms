@@ -100,6 +100,7 @@ export type LeadView = {
     id: string;
     make: string;
     model: string;
+    year: string
   } | null;
 
   assigned_to: {

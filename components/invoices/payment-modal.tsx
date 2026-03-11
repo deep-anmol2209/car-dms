@@ -48,7 +48,7 @@ const paymentSchema = z.object({
   paymentMethod: z.enum(['Cash', 'UPI', 'Card', 'Bank Transfer', 'Cheque']),
   transactionDate: z.date(),
   referenceId: z.string().optional(),
-  notes: z.string().optional(),
+  description: z.string().optional(),
 });
 
 type AddPaymentFormValues = z.infer<typeof paymentSchema>;
@@ -89,7 +89,7 @@ export function AddPaymentModal({
       paymentMethod: 'Cash',
       transactionDate: new Date(),
       referenceId: '',
-      notes: '',
+      description: '',
     },
   });
 
@@ -104,9 +104,9 @@ export function AddPaymentModal({
         amount: values.amount,
         category: values.category,
         payment_method: values.paymentMethod,
-        transaction_date: values.transactionDate,
-        reference_id: values.referenceId,
-        notes: values.notes,
+        transaction_date: values.transactionDate.toISOString(),
+        reference_id: values.referenceId || null,
+        description: values.description || null,
       });
     },
     onSuccess: () => {
@@ -180,7 +180,7 @@ console.log('PAYMENT MODAL', { open, onClose, invoiceId, invoiceNumber, outstand
             <Select
               value={form.watch('category')}
               onValueChange={(value) =>
-                form.setValue('category', value as any)
+                form.setValue('category', value as AddPaymentFormValues['category'])
               }
             >
               <SelectTrigger>
@@ -273,7 +273,7 @@ console.log('PAYMENT MODAL', { open, onClose, invoiceId, invoiceNumber, outstand
             <label className="text-sm font-medium">Notes</label>
             <Textarea
               rows={3}
-              {...form.register('notes')}
+              {...form.register('description')}
             />
           </div>
 

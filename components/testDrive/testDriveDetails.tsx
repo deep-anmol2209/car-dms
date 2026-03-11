@@ -8,6 +8,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -110,7 +111,7 @@ const handleEndDrive = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              We couldn't retrieve the test drive information. Please try again later.
+              We couldn&apos;t retrieve the test drive information. Please try again later.
             </p>
           </CardContent>
         </Card>
@@ -270,7 +271,7 @@ const handleEndDrive = () => {
 
                   {testDrive.driver_license_image_url && (
                     <div className="group relative mt-2 overflow-hidden rounded-md border shadow-sm">
-                      <img
+                      <Image
                         src={testDrive.driver_license_image_url}
                         alt="License Preview"
                         className="h-24 w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
@@ -381,7 +382,7 @@ const handleEndDrive = () => {
                   </p>
                   {testDrive.signature_image_url ? (
                     <div className="flex items-center justify-center rounded border bg-white p-3">
-                      <img
+                      <Image
                         src={testDrive.signature_image_url}
                         alt="Signature"
                         className="max-h-12 w-auto opacity-80 mix-blend-multiply"

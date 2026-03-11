@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInventoryItem } from "@/hooks/use-inventory";
 import { cn } from "@/lib/utils";
-
+import Image from "next/image";
 export function VehicleDetail() {
   const params = useParams();
   const id = params?.id as string;
@@ -110,11 +110,13 @@ export function VehicleDetail() {
           <Card className="border-none shadow-sm overflow-hidden bg-muted/20">
             <div className="aspect-[4/3] relative w-full overflow-hidden rounded-xl bg-background border">
               {selectedImage ? (
-                <img
-                  src={selectedImage}
-                  alt={`${vehicle.make} ${vehicle.model}`}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                />
+             <Image
+             src={selectedImage}
+             alt={`${vehicle.make} ${vehicle.model}`}
+             fill
+             sizes="(max-width: 1024px) 100vw, 60vw"
+             className="object-cover transition-transform duration-500 hover:scale-105"
+           />
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground bg-muted/50">
                   <CarFront className="h-16 w-16 mb-2 opacity-20" />
@@ -137,11 +139,13 @@ export function VehicleDetail() {
                       : "border-transparent opacity-70 hover:opacity-100 hover:border-border"
                   )}
                 >
-                  <img
-                    src={img.thumbnailUrl || img.url}
-                    alt="thumbnail"
-                    className="w-full h-full object-cover"
-                  />
+                 <Image
+  src={img.thumbnailUrl || img.url}
+  alt="thumbnail"
+  fill
+  sizes="120px"
+  className="object-cover"
+/>
                 </button>
               ))}
             </div>

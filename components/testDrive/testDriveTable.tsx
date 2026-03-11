@@ -50,7 +50,7 @@ export default function TestDrivesTable({ data }: TestDrivesTableProps) {
         </div>
         <h3 className="text-lg font-semibold text-foreground">No test drives found</h3>
         <p className="text-muted-foreground max-w-sm mt-2 text-sm">
-          We couldn't find any records matching your criteria. 
+          We couldn&apos;t find any records matching your criteria. 
           Try adjusting filters or schedule a new drive.
         </p>
       </div>

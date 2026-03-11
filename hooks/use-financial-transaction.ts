@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createPayment, getFinancialTransactions } from '@/lib/actions/financialTransaction';
-import { CreatePaymentPayload } from '@/lib/actions/financialTransaction';
+import { CreateFinancialTransactionPayload, paymentSchema } from '@/types/invoice';
 import { toast } from 'react-hot-toast';
 import { FinancialTransaction } from '@/types/invoice';
 
@@ -10,7 +10,7 @@ export function useCreatePayment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreatePaymentPayload) =>
+    mutationFn: (payload: CreateFinancialTransactionPayload) =>
       createPayment(payload),
 
     onSuccess: () => {

@@ -644,7 +644,7 @@ if (!invoice) return null; // ✅ ADD THIS
               </TableHeader>
               <TableBody>
                 {invoice.line_items.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-muted/30 transition-colors">
+                  <TableRow key={item.description} className="hover:bg-muted/30 transition-colors">
                     <TableCell className="font-medium text-slate-700">{item.description}</TableCell>
                     <TableCell className="text-center">{item.quantity}</TableCell>
                     <TableCell className="text-right font-mono">{formatCurrency(item.unit_price)}</TableCell>

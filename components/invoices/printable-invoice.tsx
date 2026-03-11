@@ -871,14 +871,14 @@ export function PrintableInvoice({
           <div className="flex justify-between text-sm text-slate-600">
   <span>Total Paid</span>
   <span className="font-medium text-emerald-600">
-    {formatCurrency(totalPaid) || "0"}
+    {formatCurrency(totalPaid || 0) }
   </span>
 </div>
 
 <div className="flex justify-between text-base font-bold text-slate-900 border-t pt-2">
   <span>Balance Due</span>
   <span className="tabular-nums">
-    {formatCurrency(remainingAmount) || calculation.grandTotal}
+    {formatCurrency(remainingAmount || calculation.grandTotal) }
   </span>
 </div>
 
