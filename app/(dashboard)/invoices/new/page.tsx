@@ -420,8 +420,9 @@ export default function NewInvoicePage() {
   const router = useRouter();
 
   // Data fetching
-  const { data: customers=[], isLoading: isLoadingCustomers } = useCustomers();
+  const { data: customerResponse, isLoading: isLoadingCustomers } = useCustomers();
   const { data: vehicles, isLoading: isLoadingVehicles } = useVehicles();
+  const customers = customerResponse?.data ?? [];
   const createInvoice = useCreateInvoice();
 
   // Form initialization
