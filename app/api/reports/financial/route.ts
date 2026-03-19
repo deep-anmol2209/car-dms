@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFinancialReport } from "@/lib/actions/reports";
-
+export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const data = await getFinancialReport();
