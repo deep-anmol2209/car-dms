@@ -22,17 +22,13 @@ export async function postVehicleToFacebook(vehicleId: string): Promise<Facebook
     throw new Error('Vehicle not found');
   }
 
-  // Get Facebook page credentials
-  const { data: fbAccount, error: fbError } = await supabase
-    .from('facebook_business_account')
-    .select('*')
-    .eq('is_connected', true)
-    .single();
+  const pageId = process.env.FACEBOOK_PAGE_ID!;
+  const accessToken = process.env.FACEBOOK_ACCESS_TOKEN!;
+  const apiUrl = `https://graph.facebook.com/v19.0/${pageId}/feed`;
 
-  if (fbError || !fbAccount) {
-    throw new Error('Facebook account not connected. Please connect in Settings.');
+  if (!pageId || !accessToken) {
+    throw new Error('Facebook credentials missing in environment variables');
   }
-
   // Construct marketing caption
   const caption = `Just Arrived! ${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.trim ? ` ${vehicle.trim}` : ''}
 
@@ -46,15 +42,18 @@ Contact us today for more information! 🚗✨
 
 #UsedCars #${vehicle.make} #${vehicle.model} #CarDealer`;
 
-  // Prepare image URL (use first image if available)
-  const imageUrl = Array.isArray(vehicle.image_gallery) && vehicle.image_gallery.length > 0
-    ? vehicle.image_gallery[0]
-    : null;
+let imageUrls: string[] = [];
 
-  // Post to Facebook Graph API
-  const pageId = fbAccount.page_id;
-  const accessToken = fbAccount.access_token;
-  const apiUrl = `https://graph.facebook.com/v18.0/${pageId}/feed`;
+if (Array.isArray(vehicle.image_gallery)) {
+  imageUrls = vehicle.image_gallery.map((img: string) => {
+    try {
+      const parsed = JSON.parse(img);
+      return parsed.url;
+    } catch {
+      return img;
+    }
+  }).filter(Boolean);
+}
 
   try {
     const postData: Record<string, string> = {
@@ -63,47 +62,64 @@ Contact us today for more information! 🚗✨
     };
 
     // Add photo if available
-    if (imageUrl) {
-      // For photos, use photos endpoint
-      const photoUrl = `https://graph.facebook.com/v18.0/${pageId}/photos`;
-      const photoResponse = await fetch(photoUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: imageUrl,
-          caption: caption,
+    if (imageUrls.length > 0) {
+      const uploadedMediaIds: string[] = [];
+    
+      // Step 1: Upload all images (unpublished)
+      for (const url of imageUrls) {
+        const res = await fetch(
+          `https://graph.facebook.com/v19.0/${pageId}/photos`,
+          {
+            method: "POST",
+            body: new URLSearchParams({
+              url,
+              published: "false",
+              access_token: accessToken,
+            }),
+          }
+        );
+    
+        const data = await res.json();
+    
+        if (data.id) {
+          uploadedMediaIds.push(data.id);
+        } else {
+          console.error("Image upload failed:", data);
+        }
+      }
+    
+      // Step 2: Create post with all images
+      const attached_media = uploadedMediaIds.map((id) => ({
+        media_fbid: id,
+      }));
+    
+      const postRes = await fetch(apiUrl, {
+        method: "POST",
+        body: new URLSearchParams({
+          message: caption,
+          attached_media: JSON.stringify(attached_media),
           access_token: accessToken,
         }),
       });
-
-      if (!photoResponse.ok) {
-        const errorData = await photoResponse.json();
-        throw new Error(errorData.error?.message || 'Failed to post photo');
-      }
-
-      const photoData = await photoResponse.json();
-      
-      // Save to social_media_posts table
-      const { error: postError } = await supabase.from('social_media_posts').insert({
+    
+      const postData = await postRes.json();
+    
+      // Save
+      await supabase.from("social_media_posts").insert({
         vehicle_id: vehicleId,
-        platform: 'Facebook',
+        platform: "Facebook",
         post_text: caption,
-        image_urls: imageUrl ? [imageUrl] : null,
-        facebook_post_id: photoData.id,
-        status: 'Published',
+        image_urls: imageUrls,
+        facebook_post_id: postData.id,
+        status: "Published",
         published_at: new Date().toISOString(),
       });
-      
-      if (postError) {
-        console.error('Failed to save social media post:', postError);
-      }
-
+    
       return {
-        id: photoData.id,
+        id: postData.id,
         success: true,
       };
+
     } else {
       // Post text-only status
       const response = await fetch(apiUrl, {
@@ -159,4 +175,35 @@ Contact us today for more information! 🚗✨
       error: error.message,
     };
   }
+}
+
+export async function getRecentFacebookPosts(limit: number = 10) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('social_media_posts')
+    .select(`
+      id,
+      vehicle_id,
+      post_text,
+      image_urls,
+      facebook_post_id,
+      status,
+      published_at,
+      vehicles (
+        make,
+        model,
+        year
+      )
+    `)
+    .eq('platform', 'Facebook')
+    .order('published_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching posts:', error);
+    throw new Error('Failed to fetch posts');
+  }
+
+  return data;
 }

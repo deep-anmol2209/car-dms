@@ -27,7 +27,9 @@ interface GetVehiclesResponse {
 export async function getVehicles(
   params: GetVehiclesParams
 ): Promise<GetVehiclesResponse> {
+
   const supabase = await createClient();
+console.log("getvehicles");
 
   const {
     search = "",

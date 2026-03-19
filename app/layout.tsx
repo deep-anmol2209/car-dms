@@ -5,6 +5,7 @@ import { QueryProvider } from "@/lib/query-client";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/theme-provider";
 import {Providers} from "@/app/providers/Providers";
+import { AIFloatingButton } from "@/components/ai/ai-button";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -63,11 +64,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <AIFloatingButton />
           {children}
-          {/* <QueryProvider>
-            {children}
-            <Toaster position="top-right" />
-          </QueryProvider> */}
+        
         </ThemeProvider>
 
         </Providers>

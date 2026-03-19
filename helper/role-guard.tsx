@@ -24,7 +24,7 @@ export function RoleGuard({ allowed, children }: Props) {
   if (!user) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p className="text-gray-500">Checking permissions...</p>
+       
       </div>
     );
   }

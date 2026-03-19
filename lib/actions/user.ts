@@ -8,6 +8,7 @@ import z from 'zod';
 import { deleteFile, updateFile } from '@/helper/deleteImage';
 import { requireRole } from '../auth/requiredRole';
 import { PersonalProfileFormData } from "@/types/personalProfile";
+import { getCurrentUser, getCurrentUserProfile } from './auth';
 
 export async function getUsers({
   page = 1,
@@ -85,7 +86,58 @@ export async function getUsers({
   }
 }
 
+export async function getAssignableUsers() {
+  try {
+    const supabase = await createClient();
 
+    // ensure user is logged in
+    await requireRole(["Admin", "Manager", "Staff"]);
+
+    const user = await getCurrentUserProfile();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    let query = supabase
+      .from("users")
+      .select("id, full_name, email, role")
+      .order("full_name", { ascending: true });
+
+    // Role-based filtering
+    if (user.role === "Staff") {
+      query = query.eq("role", "Staff");
+    }
+
+    if (user.role === "Manager") {
+      query = query.in("role", ["Staff", "Manager"]);
+    }
+
+    // Admin → no filter (gets all)
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching assignable users:", error);
+      throw new Error("Failed to fetch users");
+    }
+
+    return {
+      success: true,
+      data: data ?? [],
+    };
+  } catch (error) {
+    console.error("Get assignable users error:", error);
+
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch assignable users",
+    };
+  }
+}
 export async function getUserById(id: string) {
   try {
     if (!id) {

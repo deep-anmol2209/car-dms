@@ -96,7 +96,7 @@ export async function getRevenueData() {
   // Fetch sales deals for revenue trend
   const { data, error } = await supabase
     .from('sales_deals')
-    .select('created_at, amount')
+    .select('created_at, sale_price')
     .order('created_at', { ascending: true });
   
   if (error) {
@@ -116,7 +116,7 @@ export async function getRevenueData() {
   const monthlyRevenue = data?.reduce((acc, deal) => {
     const date = new Date(deal.created_at);
     const monthKey = date.toLocaleDateString('en-US', { month: 'short' });
-    const amount = parseFloat(deal.amount?.toString() || '0') || 0;
+    const amount = parseFloat(deal.sale_price?.toString() || '0') || 0;
     acc[monthKey] = (acc[monthKey] || 0) + amount;
     return acc;
   }, {} as Record<string, number>) || {};

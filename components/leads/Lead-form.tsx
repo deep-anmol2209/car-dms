@@ -6,7 +6,7 @@ import * as z from "zod";
 import type { LeadFormData } from "@/types/leads";
 import { useVehicles } from "@/hooks/use-vehicles";
 import { useCustomers } from "@/hooks/use-customers";
-import { useUsers } from "@/hooks/use-users";
+import { useAssignableUsers } from "@/hooks/use-users";
 import { Button } from "@/components/ui/button";
 import { useCreateLead } from "@/hooks/use-leads";
 
@@ -76,16 +76,18 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
   });
   const createLeadMutation = useCreateLead();
   const {
-    data: customers = [],
+    data: customerResponse,
     isLoading: isCustomersLoading,
     isError: isCustomersError,
   } = useCustomers();
+
+  const customers = customerResponse?.data ?? [];
   const {
-    data: users = [],
+    data: userResponse,
     isLoading: isUsersLoading,
     isError: isUsersError,
-  } = useUsers();
-  
+  } = useAssignableUsers();
+  const users = userResponse?.data ?? [];
   const staffUsers = users.filter((user: User) => user.role === 'Staff');
 
   const { isSubmitting } = form.formState;
@@ -266,6 +268,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
     </FormItem>
   )}
 />
+{/* klkk */}
 
 
                 {/* Assigned To Select */}
@@ -276,7 +279,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
     <FormItem>
       <FormLabel>Assigned To</FormLabel>
 
-      <Select
+       <Select
         value={field.value || "unassigned"}
         onValueChange={(value) =>
           field.onChange(value === "unassigned" ? null : value)
@@ -298,19 +301,19 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
         </FormControl>
 
         <SelectContent>
-          {/* Default option */}
+         
           <SelectItem value="unassigned">
             Auto-assign later
           </SelectItem>
 
-          {/* Empty state */}
+          Empty state
           {!isUsersLoading && users.length === 0 && (
             <SelectItem value="no-users" disabled>
               No users found
             </SelectItem>
           )}
 
-          {/* Users list */}
+          Users list
           {staffUsers.map((user: User ) => (
             <SelectItem key={user.id} value={user.id}>
               {user.full_name}
@@ -318,7 +321,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
             </SelectItem>
           ))}
         </SelectContent>
-      </Select>
+      </Select> 
 
       <FormMessage />
     </FormItem>

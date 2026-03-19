@@ -17,7 +17,7 @@ export async function requireRole(allowedRoles: string[]) {
     .select("role")
     .eq("id", user.id)
     .single();
-console.log(profile);
+// console.log(profile);
 
   if (!profile || !allowedRoles.includes(profile.role)) {
     throw new Error("Forbidden");

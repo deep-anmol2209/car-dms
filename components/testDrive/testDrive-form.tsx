@@ -49,7 +49,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useVehicles } from "@/hooks/use-vehicles";
 import { useCustomers } from "@/hooks/use-customers";
-import { useUsers } from "@/hooks/use-users";
+import { useAssignableUsers, useUsers } from "@/hooks/use-users";
 import type { User as UserType } from "@/types/user";
 import {
   testDriveFormSchema,
@@ -138,15 +138,18 @@ const onFormSubmit = async (data: TestDriveFormValues) => {
 };
 
     const {
-      data: customers = [],
+      data: customerResponse,
       isLoading: isCustomersLoading,
       isError: isCustomersError,
     } = useCustomers();
+    const customers = customerResponse?.data ?? [];
     const {
-      data: users = [],
+      data: userResponse,
       isLoading: isUsersLoading,
       isError: isUsersError,
-    } = useUsers();
+    } = useAssignableUsers();
+
+    const users= userResponse?.data || []
 const { data: vehicles = [], isLoading } = useVehicles();
   const staffUsers = users.filter((user:UserType) => user.role === 'Staff');
   return (

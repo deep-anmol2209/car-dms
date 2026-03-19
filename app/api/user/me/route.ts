@@ -8,7 +8,9 @@ import { updateCurrentUserProfile } from "@/lib/actions/user";
 export async function GET() {
   try {
    const user = await getCurrentUserProfile();
-   console.log(user);
+   console.log("hlo");
+   
+  //  console.log(user);
    
     return NextResponse.json(user);
   } catch (error) {

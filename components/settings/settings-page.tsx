@@ -7,6 +7,7 @@ import { PersonalProfileForm } from '@/components/settings/personal-profile-form
 import { Button } from '@/components/ui/button';
 import { ActivityIcon } from 'lucide-react';
 import { useCurrentUser } from '@/hooks/useAuth';
+import { Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 
@@ -55,8 +56,15 @@ console.log(user);
       toast.error("Failed to update profile");
     }
   };
-  if (isLoading) {
-    return <div className="p-6">Loading settings...</div>;
+  if (isLoading || userLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-muted-foreground">Loading settings...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -167,7 +167,16 @@ async function fetchUsers({
   return response.json();
 }
 
+async function fetchAssignableUsers() {
+  const response = await fetch("/api/user/assignable");
 
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to fetch assignable users");
+  }
+
+  return response.json();
+}
 async function fetchUserById(id: string): Promise<User> {
   const response = await fetch(`/api/user/${id}`, {
     method: 'GET',
@@ -275,6 +284,15 @@ export function useUsers(filters: {
     queryFn: () => fetchUsers(filters),
     placeholderData: (prevData) => prevData,
     staleTime: 1000 * 60 * 5,
+  });
+
+}
+
+export function useAssignableUsers() {
+  return useQuery({
+    queryKey: ["assignable-users"],
+    queryFn: fetchAssignableUsers,
+    staleTime: 1000 * 60 * 5, // cache for 5 minutes
   });
 }
 
