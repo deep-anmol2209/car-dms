@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       supabase.auth.onAuthStateChange((_event, session) => {
         if (!session) {
           queryClient.clear();
-          router.replace("/login");
+          // router.replace("/login");
         }
       });
 
