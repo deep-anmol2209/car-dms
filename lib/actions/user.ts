@@ -191,7 +191,7 @@ const adminClient = await supabaseAdmin;
     // 1️⃣ Invite user (AUTH)
 const { data: inviteData, error: inviteError } =
   await adminClient.auth.admin.inviteUserByEmail(validatedData.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_BASE_UR}/confirm`,
+    redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/confirm`,
     data: {full_name: validatedData.full_name, role: validatedData.role}});
 
 if (inviteError || !inviteData.user) {
@@ -218,6 +218,8 @@ console.log("inviteUser: ",inviteData);
       .single();
 
     if (error) {
+      console.log("error: ", error);
+      
       console.error('Error creating user:', error);
       throw new Error('Failed to create user');
     }
