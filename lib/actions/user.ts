@@ -191,7 +191,7 @@ const adminClient = await supabaseAdmin;
     // 1️⃣ Invite user (AUTH)
 const { data: inviteData, error: inviteError } =
   await adminClient.auth.admin.inviteUserByEmail(validatedData.email, {
-    redirectTo: "http://localhost:3000/confirm",
+    redirectTo: `${process.env.NEXT_PUBLIC_BASE_UR}/confirm`,
     data: {full_name: validatedData.full_name, role: validatedData.role}});
 
 if (inviteError || !inviteData.user) {
