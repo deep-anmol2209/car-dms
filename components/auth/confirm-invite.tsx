@@ -54,7 +54,7 @@ export default function ConfirmInvitePage() {
       if (error) {
         console.error(error);
         toast.error('Invite link expired or invalid');
-        router.replace('/login');
+        // router.replace('/login');
         return;
       }
 
@@ -85,7 +85,7 @@ export default function ConfirmInvitePage() {
     }
 
     toast.success('Account activated successfully');
-    router.replace('/login');
+    // router.replace('/login');
   };
 
   if (loading) {
