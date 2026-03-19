@@ -36,8 +36,12 @@ export default function ConfirmInvitePage() {
       const refresh_token = params.get('refresh_token');
 
       if (!access_token || !refresh_token) {
+        console.log("acces token: ", access_token);
+        console.log("refresh token: ", refresh_token);
+        
+        
         toast.error('Invalid or expired invite link');
-        router.replace('/login');
+        // router.replace('/login');
         return;
       }
 
