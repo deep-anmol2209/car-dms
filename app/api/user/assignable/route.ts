@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAssignableUsers } from "@/lib/actions/user";
-
+export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     console.log("get staff users");
