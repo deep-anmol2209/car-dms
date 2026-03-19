@@ -195,6 +195,8 @@ const { data: inviteData, error: inviteError } =
     data: {full_name: validatedData.full_name, role: validatedData.role}});
 
 if (inviteError || !inviteData.user) {
+  console.log("inviteError: ",inviteError);
+  
   throw new Error('Failed to invite user');
 }
 console.log("inviteUser: ",inviteData);
