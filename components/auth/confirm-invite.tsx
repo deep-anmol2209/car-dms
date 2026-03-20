@@ -178,38 +178,57 @@ export default function ConfirmInvitePage() {
   useEffect(() => {
     const handleInvite = async () => {
       try {
-        // ✅ Correct way: let Supabase handle token exchange + cookies
-        const { data, error } =
-          await supabase.auth.exchangeCodeForSession(window.location.href);
-
+        // ✅ Parse hash (correct for your case)
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+  
+        const access_token = params.get('access_token');
+        const refresh_token = params.get('refresh_token');
+  
+        if (!access_token || !refresh_token) {
+          toast.error('Invalid or expired invite link');
+          router.replace('/login');
+          return;
+        }
+  
+        // ✅ Set session
+        const { error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+  
         if (error) {
-          console.error('Exchange error:', error);
+          console.error(error);
           toast.error('Invite link expired or invalid');
           router.replace('/login');
           return;
         }
-
-        // 🔍 Debug (optional)
-        const { data: sessionData } = await supabase.auth.getSession();
-        console.log('SESSION:', sessionData);
-
-        if (!sessionData.session) {
+  
+        // ✅ IMPORTANT: force session sync
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+  
+        if (!session) {
           toast.error('Session not created');
           router.replace('/login');
           return;
         }
+        router.refresh();
 
-        setLoading(false);
+        // 🧠 small delay helps cookie sync with middleware
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
       } catch (err) {
-        console.error('Unexpected error:', err);
+        console.error(err);
         toast.error('Something went wrong');
         router.replace('/login');
       }
     };
-
+  
     handleInvite();
   }, [router, supabase]);
-
   const handleSetPassword = async () => {
     if (password.length < 8) {
       toast.error('Password must be at least 8 characters');
