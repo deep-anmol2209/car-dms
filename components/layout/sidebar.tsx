@@ -231,10 +231,15 @@ const logout = useLogout();
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
     <DropdownMenuSeparator />
 
-    <DropdownMenuItem
+   {user?.role !== "Admin" && 
+   <Link href="/profile">
+   <DropdownMenuItem
     >
+      
       Profile
     </DropdownMenuItem>
+    </Link>
+    } 
 
     <DropdownMenuSeparator />
 

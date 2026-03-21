@@ -117,7 +117,16 @@ console.log(user);
 
             <CardContent>
             <PersonalProfileForm
-  initialData={user || {}}
+  initialData={
+    user
+      ? {
+          full_name: user.full_name,
+          email: user.email,
+          phone: user.phone ?? '',
+          avatar: user.avatar ?? undefined, 
+        }
+      : undefined
+  }
   onSubmit={handlePersonalSubmit}
 />
             </CardContent>

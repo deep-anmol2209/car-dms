@@ -1,3 +1,4 @@
+import { UserSchemaType } from '@/types/user';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
@@ -54,7 +55,7 @@ async function logoutAPI(): Promise<{ success: true }> {
 }
 
 // Get current user
-async function fetchCurrentUser(): Promise<AuthUser | null> {
+async function fetchCurrentUser(): Promise<UserSchemaType | null> {
   const response = await fetch('/api/user/me');
 
 
@@ -81,7 +82,7 @@ export const authKeys = {
 
 // Current logged-in user
 export function useCurrentUser() {
-  return useQuery<AuthUser | null, Error>({
+  return useQuery<UserSchemaType | null, Error>({
     queryKey: authKeys.user(),
     queryFn: fetchCurrentUser,
     staleTime: 1000 * 60 * 10, // 10 min
