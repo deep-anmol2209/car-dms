@@ -1,5 +1,5 @@
 // File: app/api/upload-auth/route.ts
-
+export const dynamic = "force-dynamic";
 import { getUploadAuthParams } from "@imagekit/next/server"
 import crypto from "crypto"
 
