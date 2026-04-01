@@ -67,8 +67,8 @@ export default function EditTestDriveModal() {
     driver_license_number: data.driver_license_number,
     driver_license_expiry: new Date(data.driver_license_expiry),
 
-    driver_license_image_url: data.driver_license_image_url ?? undefined,
-    signature_image_url: data.signature_image_url ?? undefined,
+    driver_license: data.driver_license ?? undefined,
+    signature: data.signature ?? undefined,
 
     start_time: data.start_time,
     notes: data.notes ?? "",

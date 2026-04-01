@@ -133,7 +133,7 @@ export const invoiceObjectSchema = z.object({
   ),
 
   status: z.enum(INVOICE_STATUSES),
-  notes: z.string().optional(),
+  notes: z.string().nullable().optional(),
 });
 
 /* ============================================================================

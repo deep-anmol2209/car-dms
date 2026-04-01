@@ -269,10 +269,12 @@ const handleEndDrive = () => {
                     </span>
                   </div>
 
-                  {testDrive.driver_license_image_url && (
+                  {testDrive.driver_license && (
                     <div className="group relative mt-2 overflow-hidden rounded-md border shadow-sm">
                       <Image
-                        src={testDrive.driver_license_image_url}
+                      width={100}
+                      height={100}
+                        src={testDrive.driver_license.imageUrl}
                         alt="License Preview"
                         className="h-24 w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
                       />
@@ -380,10 +382,12 @@ const handleEndDrive = () => {
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Customer Acceptance
                   </p>
-                  {testDrive.signature_image_url ? (
+                  {testDrive.signature?.imageUrl ? (
                     <div className="flex items-center justify-center rounded border bg-white p-3">
                       <Image
-                        src={testDrive.signature_image_url}
+                      width={100}
+                      height={100}
+                        src={testDrive.signature.imageUrl }
                         alt="Signature"
                         className="max-h-12 w-auto opacity-80 mix-blend-multiply"
                       />

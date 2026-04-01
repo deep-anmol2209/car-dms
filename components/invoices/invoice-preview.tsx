@@ -15,6 +15,8 @@ interface InvoicePreviewProps {
   };
   calculation: InvoiceCalculation;
   packageName?: string;
+  packageFee: number;
+  basePrice: number;
   lineItems?: Array<{
     description: string;
     quantity: number;
@@ -32,6 +34,8 @@ export function InvoicePreview({
   vehicleInfo,
   calculation,
   packageName,
+  basePrice,
+  packageFee,
   lineItems = [],
   invoiceDate,
   dueDate,
@@ -113,23 +117,43 @@ export function InvoicePreview({
                 </tr>
               </thead>
               <tbody>
-                {lineItems.map((item, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="p-2">{item.description || 'Item'}</td>
-                    <td className="p-2 text-right">{item.quantity}</td>
-                    <td className="p-2 text-right">{formatCurrency(item.unit_price)}</td>
-                    <td className="p-2 text-right font-medium">{formatCurrency(item.amount)}</td>
-                  </tr>
-                ))}
-                {packageName && (
-                  <tr className="border-t">
-                    <td className="p-2">{packageName} Package</td>
-                    <td className="p-2 text-right">1</td>
-                    <td className="p-2 text-right">-</td>
-                    <td className="p-2 text-right font-medium">-</td>
-                  </tr>
-                )}
-              </tbody>
+  {lineItems.map((item, index) => (
+    <tr key={index} className="border-t hover:bg-slate-50">
+      <td className="p-3">{item.description || 'Item'}</td>
+      <td className="p-3 text-right">{item.quantity}</td>
+      <td className="p-3 text-right">
+        {formatCurrency(item.unit_price)}
+      </td>
+      <td className="p-3 text-right font-medium">
+        {formatCurrency(item.amount)}
+      </td>
+    </tr>
+  ))}
+
+  {/* Base Price Row */}
+  <tr className="border-t bg-slate-50">
+    <td className="p-3 font-medium">Base Price</td>
+    <td></td>
+    <td></td>
+    <td className="p-3 text-right font-semibold">
+      {formatCurrency(basePrice)}
+    </td>
+  </tr>
+
+  {/* Package Row */}
+  {packageName && (
+    <tr className="bg-slate-50">
+      <td className="p-3">
+        Package <span className="text-slate-500">({packageName})</span>
+      </td>
+      <td></td>
+      <td></td>
+      <td className="p-3 text-right font-semibold">
+        {formatCurrency(Number(packageFee))}
+      </td>
+    </tr>
+  )}
+</tbody>
             </table>
           </div>
         </div>

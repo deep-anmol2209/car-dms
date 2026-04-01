@@ -15,8 +15,9 @@ export const testDriveFormSchema = z.object({
   driver_license_number: z.string().min(5),
 status: z.string().optional(),
 driver_license_expiry: z.coerce.date(), 
-  driver_license_image_url: z.string().optional(),
-signature_image_url: z.string().optional(),
+
+  driver_license: z.object({fileId: z.string(), imageUrl: z.string().url()}).nullable().optional(),
+signature: z.object({fileId: z.string(), imageUrl: z.string().url()}).nullable().optional(),
 
   start_time: z.string(), // datetime-local
   notes: z.string().optional(),
@@ -52,8 +53,14 @@ export interface TestDrive {
   driver_license_number: string;
   driver_license_expiry: string;
 
-  driver_license_image_url: string | null;
-  signature_image_url: string | null;
+  driver_license: {
+    fileId: string;
+    imageUrl: string;
+  } | null;
+  signature: {
+    fileId: string;
+    imageUrl: string;
+  } | null;
 status: string;
   start_time: string;
   end_time: string | null;
@@ -111,8 +118,8 @@ export const patchTestDriveSchema = z.object({
   driver_license_number: z.string().min(5).optional(),
   driver_license_expiry: z.coerce.date().optional(),
 
-  driver_license_image_url: z.string().nullable().optional(),
-  signature_image_url: z.string().nullable().optional(),
+  driver_license: z.object({fileId: z.string(), imageUrl: z.string().url()}).nullable().optional(),
+  signature: z.object({fileId: z.string(), imageUrl: z.string().url()}).nullable().optional(),
 status: z.string().optional(),
   start_time: z.string().optional(),
   notes: z.string().nullable().optional(),

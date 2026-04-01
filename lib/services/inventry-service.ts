@@ -149,3 +149,107 @@ export async function getVehiclesByYear() {
     data: stats,
   }
 }
+
+export async function getInventoryInsights() {
+  const supabase = await createClient()
+
+  /* -------------------------- STOCK DATA -------------------------- */
+
+  const { data: vehicles, error: vehicleError } = await supabase
+    .from("vehicles")
+    .select("model, created_at")
+
+  if (vehicleError) throw vehicleError
+
+  /* -------------------------- SALES DATA -------------------------- */
+
+  const sevenDaysAgo = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000
+  ).toISOString()
+
+  const thirtyDaysAgo = new Date(
+    Date.now() - 30 * 24 * 60 * 60 * 1000
+  ).toISOString()
+
+  const { data: sales, error: salesError } = await supabase
+    .from("sales_deals")
+    .select(`
+      deal_date,
+      vehicles (
+        model
+      )
+    `)
+    .eq("deal_status", "Paid Off")
+
+  if (salesError) throw salesError
+
+  /* -------------------------- AGGREGATION -------------------------- */
+
+  const stockMap: Record<string, number> = {}
+  const lastRestockMap: Record<string, Date> = {}
+
+  vehicles?.forEach((v) => {
+    const model = v.model
+
+    stockMap[model] = (stockMap[model] || 0) + 1
+
+    const created = new Date(v.created_at)
+    if (!lastRestockMap[model] || created > lastRestockMap[model]) {
+      lastRestockMap[model] = created
+    }
+  })
+
+  const sales7Map: Record<string, number> = {}
+  const sales30Map: Record<string, number> = {}
+
+  sales?.forEach((s: any) => {
+    const model = s.vehicles?.model
+    if (!model) return
+
+    const date = new Date(s.deal_date)
+
+    if (date >= new Date(sevenDaysAgo)) {
+      sales7Map[model] = (sales7Map[model] || 0) + 1
+    }
+
+    if (date >= new Date(thirtyDaysAgo)) {
+      sales30Map[model] = (sales30Map[model] || 0) + 1
+    }
+  })
+
+  /* -------------------------- FINAL STRUCTURE -------------------------- */
+
+  const models = Object.keys(stockMap)
+
+  const insights = models.map((model) => {
+    const stock = stockMap[model] || 0
+    const sales7 = sales7Map[model] || 0
+    const sales30 = sales30Map[model] || 0
+
+    const avgDailySales = sales30 / 30
+
+    const lastRestockDate = lastRestockMap[model]
+    const daysSinceRestock = lastRestockDate
+      ? Math.floor(
+          (Date.now() - lastRestockDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+      : null
+
+    return {
+      model,
+      currentStock: stock,
+      salesLast7Days: sales7,
+      salesLast30Days: sales30,
+      avgDailySales: Number(avgDailySales.toFixed(2)),
+      lastRestockedDaysAgo: daysSinceRestock,
+    }
+  })
+
+  /* -------------------------- FILTER (IMPORTANT) -------------------------- */
+
+  return insights.filter(
+    (car) =>
+      car.currentStock < 5 || car.salesLast7Days > 2
+  )
+}

@@ -33,6 +33,7 @@ export function InvoiceNotesCard({ control }: Props) {
                   placeholder="Payment terms, special instructions, or internal notes..."
                   rows={4}
                   {...field}
+                  value={field.value ?? ''}
                 />
               </FormControl>
             </FormItem>

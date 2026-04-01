@@ -9,13 +9,13 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { VehicleForm } from '@/components/inventory/vehicle-form';
-import { useCreateVehicle } from '@/hooks/use-vehicles';
+import { useCreateInventory } from '@/hooks/use-inventory';
 import toast from 'react-hot-toast';
 
 
 export default function NewInventoryModal() {
   const router = useRouter();
-  const createVehivle = useCreateVehicle()
+  const createVehivle = useCreateInventory()
   return (
 <Dialog open onOpenChange={() => router.back()}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">

@@ -397,7 +397,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -486,7 +487,18 @@ export default function InvoiceDetailsPage() {
   // In a real app, fetch data based on params.id
   const {data:invoice, isLoading, error} = useInvoice(id);
 
-if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground font-medium">
+            Loading invoice details...
+          </p>
+        </div>
+      </div>
+    );
+  }
 if (error) return <div>Error: {error.message}</div>;
 if (!invoice) return null; // ✅ ADD THIS
   const status = getStatusConfig(invoice.status, invoice.due_date);

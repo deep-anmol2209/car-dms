@@ -485,11 +485,19 @@ const getInitials = (name?: string) => {
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    setTimeout(() => {
-      setIsDeleting(false);
-      setShowDeleteDialog(false);
-      console.log("Deleted");
-    }, 1500);
+   deleteLead.mutate(id,{
+    onSuccess: ()=>{
+      router.back()
+      toast.success("lead deleted")
+    },
+     onError: ()=>{
+      router.back
+      
+      toast.error("error in deletion")
+    }
+   })
+   setIsDeleting(false)
+   
   };
 function mapLeadViewToFormData(lead: LeadView): Partial<LeadFormData> {
   return {
@@ -509,6 +517,9 @@ function mapLeadViewToFormData(lead: LeadView): Partial<LeadFormData> {
                     toast.success("Lead updated");
                     
                   },
+                  onError: ()=>{
+                    toast.error("error in updation")
+                  }
                 })
     setShowEditDialog(false);
   };

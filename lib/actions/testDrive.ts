@@ -166,10 +166,10 @@ export async function createTestDrive(formData: unknown) {
       .insert({
         ...validated,
         salesperson_id: validated.salesperson_id ?? null,
-        driver_license_image_url:
-          validated.driver_license_image_url ?? null,
-        signature_image_url:
-          validated.signature_image_url ?? null,
+        driver_license:
+          validated.driver_license ?? null,
+        signature:
+          validated.signature ?? null,
         notes: validated.notes ?? null,
       })
       .select()

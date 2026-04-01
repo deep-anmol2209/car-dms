@@ -46,10 +46,10 @@ export async function getInventoryReport() {
   const totalStock = vehicles?.length || 0;
 
   const soldVehicles =
-    vehicles?.filter((v) => v.status === 'sold').length || 0;
+    vehicles?.filter((v) => v.status === 'Sold').length || 0;
 
   const unsoldVehicles =
-    vehicles?.filter((v) => v.status !== 'sold').length || 0;
+    vehicles?.filter((v) => v.status !== 'Sold').length || 0;
 
   return {
     totalStock,

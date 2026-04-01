@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import type { LeadFormData } from "@/types/leads";
-import { useVehicles } from "@/hooks/use-vehicles";
+import { useInventory } from "@/hooks/use-inventory";
 import { useCustomers } from "@/hooks/use-customers";
 import { useAssignableUsers } from "@/hooks/use-users";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ import {
 
 import { Customer } from "@/types/customers";
 import { User } from "@/types/user";
+import { Vehicle } from "@/types/inventory";
 /**
  * Zod Schema for validation
  * Defines the shape and rules of the form
@@ -91,7 +92,9 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
   const staffUsers = users.filter((user: User) => user.role === 'Staff');
 
   const { isSubmitting } = form.formState;
-  const { data: vehicles = [], isLoading } = useVehicles();
+const { data: vehicleResponse, isLoading } = useInventory();
+
+const vehicles = vehicleResponse?.data ?? [];
 
   // 2. Handle Submission
   const onFormSubmit = async (data: z.infer<typeof leadFormSchema>) => {
@@ -255,7 +258,7 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
         <SelectContent>
           <SelectItem value="none">Not selected</SelectItem>
 
-          {vehicles.map((v) => (
+          {vehicles.map((v:any) => (
             <SelectItem key={v.id} value={v.id}>
               {v.year} {v.make} {v.model}
               {v.stock_number ? ` • Stock #${v.stock_number}` : ""}
@@ -306,14 +309,14 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
             Auto-assign later
           </SelectItem>
 
-          Empty state
+          
           {!isUsersLoading && users.length === 0 && (
             <SelectItem value="no-users" disabled>
               No users found
             </SelectItem>
           )}
 
-          Users list
+         
           {staffUsers.map((user: User ) => (
             <SelectItem key={user.id} value={user.id}>
               {user.full_name}
@@ -357,11 +360,11 @@ export function LeadForm({ initialData, onSubmit, onCancel }: LeadFormProps) {
                 Cancel
               </Button>
             )}
-        <Button
+ <Button
   type="submit"
-  disabled={createLeadMutation.isPending}
+  disabled={isSubmitting}
 >
-  {createLeadMutation.isPending ? "Saving..." : "Save Lead"}
+  {isSubmitting ? "Saving..." : "Save Lead"}
 </Button>
 
           </CardFooter>

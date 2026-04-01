@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useVehicles } from "@/hooks/use-vehicles";
+import { useInventory } from "@/hooks/use-inventory";
 import { useCustomers } from "@/hooks/use-customers";
 import { useAssignableUsers, useUsers } from "@/hooks/use-users";
 import type { User as UserType } from "@/types/user";
@@ -90,50 +90,67 @@ export function TestDriveForm({
   });
 const [licensePreview, setLicensePreview] = useState<string | null>(null);
 const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+const [licensePreviewUrl, setLicensePreviewUrl] = useState<string | null>(null); // server
+const [licenseObjectPreview, setLicenseObjectPreview] = useState<string | null>(null); // local
 
+const [signaturePreviewUrl, setSignaturePreviewUrl] = useState<string | null>(null);
+const [signatureObjectPreview, setSignatureObjectPreview] = useState<string | null>(null);
 const [licenseFile, setLicenseFile] = useState<File | null>(null);
 const [signatureFile, setSignatureFile] = useState<File | null>(null);
 
 useEffect(() => {
-  if (initialData?.driver_license_image_url) {
-    setLicensePreview(initialData.driver_license_image_url);
-    form.setValue(
-      "driver_license_image_url",
-      initialData.driver_license_image_url,
-      { shouldDirty: false }
-    );
+  if (initialData?.driver_license?.imageUrl) {
+    setLicensePreviewUrl(initialData.driver_license.imageUrl);
+    setLicenseObjectPreview(null);
   }
 
-  if (initialData?.signature_image_url) {
-    setSignaturePreview(initialData.signature_image_url);
-    form.setValue(
-      "signature_image_url",
-      initialData.signature_image_url,
-      { shouldDirty: false }
-    );
+  if (initialData?.signature?.imageUrl) {
+    setSignaturePreviewUrl(initialData.signature.imageUrl);
+    setSignatureObjectPreview(null);
   }
-}, [initialData, form]);
+}, [initialData]);
 
+useEffect(() => {
+  return () => {
+    if (licensePreview) URL.revokeObjectURL(licensePreview);
+    if (signaturePreview) URL.revokeObjectURL(signaturePreview);
+  };
+}, [licensePreview, signaturePreview]);
   // SAME PATTERN AS LEAD FORM
-const onFormSubmit = async (data: TestDriveFormValues) => {
-  console.log("data: ", data);
-  let licenseUrl = data.driver_license_image_url;
-  let signatureUrl = data.signature_image_url;
 
-  if (licenseFile) {
-    const uploaded = await uploadToImageKit(licenseFile);
-    licenseUrl = uploaded.url;
+
+  const onFormSubmit = async (data: TestDriveFormValues) => {
+  let licenseData = null;
+  let signatureData = null;
+
+if (licenseFile) {
+  const uploaded = await uploadToImageKit(licenseFile);
+
+  if (!uploaded.fileId || !uploaded.url) {
+    throw new Error("Upload failed");
   }
 
-  if (signatureFile) {
-    const uploaded = await uploadToImageKit(signatureFile);
-    signatureUrl = uploaded.url;
+  licenseData = {
+    fileId: uploaded.fileId,
+    imageUrl: uploaded.url,
+  };
+}
+ if (signatureFile) {
+  const uploaded = await uploadToImageKit(signatureFile);
+
+  if (!uploaded.fileId || !uploaded.url) {
+    throw new Error("Upload failed");
   }
 
+  signatureData = {
+    fileId: uploaded.fileId,
+    imageUrl: uploaded.url,
+  };
+}
   await onSubmit({
     ...data,
-    driver_license_image_url: licenseUrl,
-    signature_image_url: signatureUrl,
+    driver_license: licenseData ,
+    signature: signatureData,
   });
 };
 
@@ -150,7 +167,8 @@ const onFormSubmit = async (data: TestDriveFormValues) => {
     } = useAssignableUsers();
 
     const users= userResponse?.data || []
-const { data: vehicles = [], isLoading } = useVehicles();
+const { data: vehicleResponse, isLoading } = useInventory();
+const vehicles = vehicleResponse?.data || [];
   const staffUsers = users.filter((user:UserType) => user.role === 'Staff');
   return (
     <div className="flex justify-center p-4">
@@ -419,24 +437,41 @@ const { data: vehicles = [], isLoading } = useVehicles();
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
 <FormField
   control={form.control}
-  name="driver_license_image_url"
+  name="driver_license"
   render={() => (
     <FormItem>
       <FormLabel>License Front</FormLabel>
 
-      <ImageUploader
-        onFilesChange={(files) => {
-    setLicenseFile(files[0]);
-  }}
-      />
+<ImageUploader
+  onFilesChange={(files) => {
+    const file = files[0];
+    if (!file) return;
 
-      {licensePreview && (
-        <Image
-        alt="licese"
-          src={licensePreview}
-          className="mt-2 h-24 rounded border object-cover"
-        />
-      )}
+    setLicenseFile(file);
+
+    // revoke old
+    if (licenseObjectPreview) {
+      URL.revokeObjectURL(licenseObjectPreview);
+    }
+
+    const localUrl = URL.createObjectURL(file);
+
+    setLicenseObjectPreview(localUrl);
+    setLicensePreviewUrl(null); // 🔥 IMPORTANT
+   
+  }}
+/>
+
+      {(licenseObjectPreview || licensePreviewUrl) && (
+  <Image
+    src={licenseObjectPreview ?? licensePreviewUrl ?? ""}
+    width={100}
+    height={100}
+    alt="license"
+    className="mt-2 h-24 rounded border object-cover"
+    unoptimized
+  />
+)}
 
       <FormMessage />
     </FormItem>
@@ -447,25 +482,39 @@ const { data: vehicles = [], isLoading } = useVehicles();
 
 <FormField
   control={form.control}
-  name="signature_image_url"
+  name="signature"
   render={() => (
     <FormItem>
       <FormLabel>Customer Signature</FormLabel>
 
-   <ImageUploader
+<ImageUploader
   onFilesChange={(files) => {
-   setSignatureFile(files[0]);
+    const file = files[0];
+    if (!file) return;
+
+    setSignatureFile(file);
+
+    if (signatureObjectPreview) {
+      URL.revokeObjectURL(signatureObjectPreview);
+    }
+
+    const localUrl = URL.createObjectURL(file);
+
+    setSignatureObjectPreview(localUrl);
+    setSignaturePreviewUrl(null);
   }}
 />
 
-
-      {signaturePreview && (
-        <Image
-        alt="signature"
-          src={signaturePreview}
-          className="mt-2 h-24 rounded border object-cover"
-        />
-      )}
+{(signatureObjectPreview || signaturePreviewUrl) && (
+  <Image
+    src={signatureObjectPreview ?? signaturePreviewUrl ?? ""}
+    width={100}
+    height={100}
+    alt="signature"
+    className="mt-2 h-24 rounded border object-cover"
+    unoptimized
+  />
+)}
 
       <FormMessage />
     </FormItem>

@@ -19,8 +19,8 @@ const paymentSchema = z.object({
     'Bank Transfer',
     'Cheque',
   ]),
-  transaction_date: z.date(),
-  reference_id: z.string().optional(),
+  transaction_date: z.coerce.date(),
+  reference_id: z.string().nullable().optional(),
   notes: z.string().optional(),
 });
 

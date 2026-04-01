@@ -80,18 +80,18 @@ export default function CustomersPageClient() {
   const [viewCustomer, setViewCustomer] = useState<Customer | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [deleteCustomerId, setDeleteCustomerId] = useState<string | null>(null);
-const debouncedSearch = useDebounce(searchTerm, 500);
-const deleteCustomer= useDeleteCustomer()
-const router = useRouter();
+  const debouncedSearch = useDebounce(searchTerm, 500);
+  const deleteCustomer = useDeleteCustomer()
+  const router = useRouter();
   const {
-  data,
-  isLoading,
-  error,
-} = useCustomers({
-  page: 1,
-  limit: 10,
-  search: debouncedSearch,
-});
+    data,
+    isLoading,
+    error,
+  } = useCustomers({
+    page: 1,
+    limit: 10,
+    search: debouncedSearch,
+  });
 
   const queryClient = useQueryClient();
 
@@ -114,7 +114,7 @@ const router = useRouter();
       onSuccess: () => toast.success("Customer deleted successfully"),
       onError: () => toast.error("Failed to delete customer"),
     });
-  
+
     queryClient.invalidateQueries({ queryKey: ["customers"] });
     setDeleteCustomerId(null);
   };
@@ -191,15 +191,96 @@ const router = useRouter();
             </div>
           </div>
 
-          {/* Table */}
-          <div className="rounded-md border">
+          {/* ── MOBILE CARD VIEW (≤700px) ── */}
+          <div className="rounded-md border divide-y divide-border min-[701px]:hidden">
+            {data?.data?.length > 0 ? (
+              data.data.map((customer: Customer) => (
+                <div key={customer.id} className="p-4 space-y-3 hover:bg-muted/30 transition-colors">
+
+                  {/* Top: avatar + name + actions */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar className="h-10 w-10 border shrink-0">
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                          {getInitials(customer.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm text-foreground truncate">{customer.name}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                          ID: {customer.id.toString().slice(0, 8)}
+                        </p>
+                      </div>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setViewCustomer(customer)}>
+                          <Eye className="mr-2 h-4 w-4" /> View Profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push(`/customers/${customer.id}`)}>
+                          <Pencil className="mr-2 h-4 w-4" /> Edit Profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setDeleteCustomerId(customer.id)}
+                          className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" /> Delete Customer
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  {/* Contact info */}
+                  <div className="flex flex-col gap-1.5">
+                    {customer.email && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{customer.email}</span>
+                      </div>
+                    )}
+                    {customer.phone && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <span>{customer.phone}</span>
+                      </div>
+                    )}
+                    {!customer.email && !customer.phone && (
+                      <span className="text-xs text-muted-foreground italic">No contact info</span>
+                    )}
+                  </div>
+
+                  {/* Location */}
+                  {(customer.city || customer.province) && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span>{[customer.city, customer.province].filter(Boolean).join(", ")}</span>
+                    </div>
+                  )}
+
+                </div>
+              ))
+            ) : (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                No customers found matching your search.
+              </div>
+            )}
+          </div>
+
+          {/* ── DESKTOP TABLE VIEW (>700px) ── */}
+          <div className="rounded-md border max-[700px]:hidden">
             <Table>
               <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead className="w-[250px] pl-6">Customer Profile</TableHead>
                   <TableHead>Contact Info</TableHead>
                   <TableHead>Location</TableHead>
-                 
                   <TableHead className="pr-6 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -217,7 +298,6 @@ const router = useRouter();
                               {getInitials(customer.name)}
                             </AvatarFallback>
                           </Avatar>
-
                           <div className="flex flex-col">
                             <span className="font-medium text-sm text-foreground">{customer.name}</span>
                             <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
@@ -262,9 +342,6 @@ const router = useRouter();
                         )}
                       </TableCell>
 
-                      {/* Status */}
-                 
-
                       {/* Actions */}
                       <TableCell className="pr-6 text-right">
                         <DropdownMenu>
@@ -283,11 +360,11 @@ const router = useRouter();
                               <Pencil className="mr-2 h-4 w-4" /> Edit Profile
                             </DropdownMenuItem>
                             <DropdownMenuItem
-  onClick={() => setDeleteCustomerId(customer.id)}
-  className="text-red-600 focus:text-red-600 focus:bg-red-50"
->
-  <Trash2 className="mr-2 h-4 w-4" /> Delete Customer
-</DropdownMenuItem>
+                              onClick={() => setDeleteCustomerId(customer.id)}
+                              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete Customer
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -308,7 +385,7 @@ const router = useRouter();
 
       {/* Add Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add New Customer</DialogTitle>
             <DialogDescription>
@@ -322,120 +399,120 @@ const router = useRouter();
         </DialogContent>
       </Dialog>
       <Dialog open={!!viewCustomer} onOpenChange={() => setViewCustomer(null)}>
-  <DialogContent className="sm:max-w-[520px]">
-    <DialogHeader>
-      <DialogTitle className="flex items-center gap-2">
-        <User className="h-5 w-5 text-muted-foreground" />
-        Customer Profile
-      </DialogTitle>
-      <DialogDescription>
-        Detailed information about the selected customer.
-      </DialogDescription>
-    </DialogHeader>
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-muted-foreground" />
+              Customer Profile
+            </DialogTitle>
+            <DialogDescription>
+              Detailed information about the selected customer.
+            </DialogDescription>
+          </DialogHeader>
 
-    {viewCustomer && (
-      <div className="space-y-6">
+          {viewCustomer && (
+            <div className="space-y-6">
 
-        {/* Profile Section */}
-        <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14 border">
-            <AvatarFallback className="text-sm bg-muted">
-              {getInitials(viewCustomer.name)}
-            </AvatarFallback>
-          </Avatar>
+              {/* Profile Section */}
+              <div className="flex items-center gap-4">
+                <Avatar className="h-14 w-14 border">
+                  <AvatarFallback className="text-sm bg-muted">
+                    {getInitials(viewCustomer.name)}
+                  </AvatarFallback>
+                </Avatar>
 
-          <div>
-            <p className="font-semibold text-lg">{viewCustomer.name}</p>
-            <p className="text-xs text-muted-foreground">
-              ID: {viewCustomer.id.slice(0, 8)}
-            </p>
-          </div>
-        </div>
+                <div>
+                  <p className="font-semibold text-lg">{viewCustomer.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    ID: {viewCustomer.id.slice(0, 8)}
+                  </p>
+                </div>
+              </div>
 
-        <Separator />
+              <Separator />
 
-        {/* Contact Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              {/* Contact Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Phone className="h-4 w-4" />
-            {viewCustomer.phone || "Not provided"}
-          </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Phone className="h-4 w-4" />
+                  {viewCustomer.phone || "Not provided"}
+                </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Mail className="h-4 w-4" />
-            {viewCustomer.email || "Not provided"}
-          </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Mail className="h-4 w-4" />
+                  {viewCustomer.email || "Not provided"}
+                </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground col-span-2">
-            <MapPin className="h-4 w-4" />
-            {[viewCustomer.city, viewCustomer.province]
-              .filter(Boolean)
-              .join(", ") || "Location not available"}
-          </div>
+                <div className="flex items-center gap-2 text-muted-foreground col-span-2">
+                  <MapPin className="h-4 w-4" />
+                  {[viewCustomer.city, viewCustomer.province]
+                    .filter(Boolean)
+                    .join(", ") || "Location not available"}
+                </div>
 
-          <div className="col-span-2">
-            <p className="text-muted-foreground text-xs mb-1">Address</p>
-            <p className="text-sm">{viewCustomer.address || "—"}</p>
-          </div>
+                <div className="col-span-2">
+                  <p className="text-muted-foreground text-xs mb-1">Address</p>
+                  <p className="text-sm">{viewCustomer.address || "—"}</p>
+                </div>
 
-          <div>
-            <p className="text-muted-foreground text-xs mb-1">Postal Code</p>
-            <p className="text-sm">{viewCustomer.postal_code || "—"}</p>
-          </div>
+                <div>
+                  <p className="text-muted-foreground text-xs mb-1">Postal Code</p>
+                  <p className="text-sm">{viewCustomer.postal_code || "—"}</p>
+                </div>
 
-        </div>
+              </div>
 
-        <Separator />
+              <Separator />
 
-        {/* Notes */}
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Notes</p>
-          <p className="text-sm leading-relaxed">
-            {viewCustomer.notes || "No notes available"}
-          </p>
-        </div>
+              {/* Notes */}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                <p className="text-sm leading-relaxed">
+                  {viewCustomer.notes || "No notes available"}
+                </p>
+              </div>
 
-        <Separator />
+              <Separator />
 
-        {/* Dates */}
-        <div className="text-xs text-muted-foreground flex justify-between">
-          <span>
-            Created:{" "}
-            {new Date(viewCustomer.created_at).toLocaleDateString()}
-          </span>
-          <span>
-            Updated:{" "}
-            {new Date(viewCustomer.updated_at).toLocaleDateString()}
-          </span>
-        </div>
-      </div>
-    )}
-  </DialogContent>
-</Dialog>
+              {/* Dates */}
+              <div className="text-xs text-muted-foreground flex justify-between">
+                <span>
+                  Created:{" "}
+                  {new Date(viewCustomer.created_at).toLocaleDateString()}
+                </span>
+                <span>
+                  Updated:{" "}
+                  {new Date(viewCustomer.updated_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       <AlertDialog
-  open={!!deleteCustomerId}
-  onOpenChange={() => setDeleteCustomerId(null)}
->
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Delete Customer</AlertDialogTitle>
-      <AlertDialogDescription>
-        Are you sure you want to delete this customer? This action cannot be undone.
-      </AlertDialogDescription>
-    </AlertDialogHeader>
-
-    <AlertDialogFooter>
-      <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction
-        onClick={handleDeleteCustomer}
-        className="bg-red-600 hover:bg-red-700"
+        open={!!deleteCustomerId}
+        onOpenChange={() => setDeleteCustomerId(null)}
       >
-        Delete
-      </AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Customer</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this customer? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCustomer}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

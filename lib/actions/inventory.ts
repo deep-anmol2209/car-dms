@@ -51,18 +51,23 @@ console.log("getvehicles");
     /* ------------------------------------------------------------------ */
     if (search?.trim()) {
       const safeSearch = search.trim();
-
-      query = query.or(
-        [
-          `vin.ilike.%${safeSearch}%`,
-          `stock_number.ilike.%${safeSearch}%`,
-          `make.ilike.%${safeSearch}%`,
-          `model.ilike.%${safeSearch}%`,
-          `trim.ilike.%${safeSearch}%`,
-          `status.ilike.%${safeSearch}%`,
-          `year.ilike.%${safeSearch}%`
-        ].join(",")
-      );
+    
+      const isNumber = !isNaN(Number(safeSearch));
+    
+      let conditions = [
+        `vin.ilike.%${safeSearch}%`,
+        `stock_number.ilike.%${safeSearch}%`,
+        `make.ilike.%${safeSearch}%`,
+        `model.ilike.%${safeSearch}%`,
+        `trim.ilike.%${safeSearch}%`,
+        `status.ilike.%${safeSearch}%`,
+      ];
+    
+      if (isNumber) {
+        conditions.push(`year.eq.${Number(safeSearch)}`); // ✅ numeric search
+      }
+    
+      query = query.or(conditions.join(","));
     }
 
     /* ------------------------------------------------------------------ */

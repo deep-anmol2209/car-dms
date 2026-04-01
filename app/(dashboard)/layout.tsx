@@ -1,3 +1,4 @@
+import { AIFloatingButton } from "@/components/ai/ai-button";
 import { MainLayout } from "@/components/layout/main-layout";
 
 // Force dynamic rendering for all dashboard pages
@@ -8,5 +9,11 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <MainLayout>{children}</MainLayout>;
+  return(
+    
+    <>
+    <MainLayout>{children}</MainLayout>;
+<AIFloatingButton/>
+    </>
+  )
 }
