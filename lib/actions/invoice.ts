@@ -13,6 +13,7 @@ import {
   LineItemInput,
   UpdateInvoicePayload,
 } from '@/types/invoice';
+import { getCurrentUser } from './auth';
 import { getOrCreateSalesDeal } from '@/helper/sales-deal';
 
 /* ============================================================================
@@ -63,16 +64,10 @@ const InvoiceStatusSchema = z.enum(INVOICE_STATUSES);
 
 export async function createInvoice(payload: CreateInvoicePayload) {
   const supabase = await createClient();
+const user = await getCurrentUser();
 
-    // 🔹 STEP 1: Ensure sales deal exists
-  const newDeal= await getOrCreateSalesDeal(
-    supabase,
-    payload.customer_id,
-    payload.vehicle_id ?? null,
-    payload.base_price
 
-  );
-console.log("newDeal: ",newDeal);
+
 
   const totals = calculateInvoiceTotals(
     payload.base_price,
@@ -86,7 +81,17 @@ console.log("newDeal: ",newDeal);
     totals.payment_amount > 0
       ? round((totals.tax_amount / totals.payment_amount) * 100)
       : 0;
-
+    // 🔹 STEP 1: Ensure sales deal exists
+    const newDeal= await getOrCreateSalesDeal({
+      supabase,
+      customerId: payload.customer_id,
+      vehicleId: payload.vehicle_id ?? null,
+     salePrice: totals.total,
+      salesperson_id: payload.salesperson_id ?? user?.id,
+    }
+  
+    );
+    console.log("newDeal: ",newDeal);
   const { data: invoice, error } = await supabase
     .from('invoices')
     .insert({
@@ -138,6 +143,161 @@ console.log("newDeal: ",newDeal);
    READ (LIST)
    ============================================================================ */
 
+// export async function getInvoices(filters?: {
+//   search?: string;
+//   status?: string;
+//   page?: number;
+//   limit?: number;
+// }) {
+//   const supabase = await createClient();
+
+//   const search = filters?.search?.trim() ?? "";
+//   const status = filters?.status ?? "";
+//   const page = filters?.page ?? 1;
+//   const limit = filters?.limit ?? 10;
+
+//   const from = (page - 1) * limit;
+//   const to = from + limit - 1;
+
+//   /* =======================
+//      BASE QUERY (VIEW)
+//   ======================= */
+
+//   let query = supabase
+//     .from("invoices_search")
+//     .select("*", { count: "exact" }) // 🔥 IMPORTANT
+//     .order("created_at", { ascending: false })
+//     .range(from, to);
+
+//   /* =======================
+//      SEARCH
+//   ======================= */
+
+//   if (search.length >= 2) {
+//     const safe = search.replace(/[%_]/g, "\\$&");
+
+//     query = query.or(
+//       `invoice_number.ilike.%${safe}%,customer_name.ilike.%${safe}%,package_name.ilike.%${safe}%,notes.ilike.%${safe}%`
+//     );
+//   }
+
+//   /* =======================
+//      STATUS
+//   ======================= */
+
+//   if (status && status !== "all") {
+//     query = query.eq("status", status);
+//   }
+
+//   const { data, error, count } = await query;
+
+//   if (error) {
+//     console.error("[GET_INVOICES]", error);
+//     throw new Error("Failed to fetch invoices");
+//   }
+
+//   if (!data || data.length === 0) {
+//     return {
+//       data: [],
+//       total: count ?? 0,
+//       page,
+//       limit,
+//     };
+//   }
+
+//   /* =======================
+//      COLLECT IDS
+//   ======================= */
+
+//   const invoiceIds = data.map(i => i.id);
+//   const vehicleIds = data
+//     .map(i => i.vehicle_id)
+//     .filter((id): id is string => !!id);
+
+//   /* =======================
+//      FETCH LINE ITEMS
+//   ======================= */
+
+//   const { data: lineItems } = await supabase
+//     .from("invoice_line_items")
+//     .select("invoice_id, description, quantity, unit_price, amount")
+//     .in("invoice_id", invoiceIds);
+
+//   /* =======================
+//      FETCH VEHICLES
+//   ======================= */
+
+//   const { data: vehicles } = await supabase
+//     .from("vehicles")
+//     .select("id, year, make, model, vin, odometer, status, retail_price")
+//     .in("id", vehicleIds);
+
+//   /* =======================
+//      MAP RESULT
+//   ======================= */
+
+//   const result: InvoiceWithRelations[] = data.map((row) => {
+//     const vehicle = vehicles?.find(v => v.id === row.vehicle_id) ?? null;
+
+//     return {
+//       id: row.id,
+//       invoice_number: row.invoice_number,
+//       invoice_date: row.invoice_date,
+//       due_date: row.due_date,
+//       customer_id: row.customer_id,
+//       vehicle_id: row.vehicle_id,
+//       package_name: row.package_name,
+//       payment_amount: row.payment_amount,
+//       tax_rate: row.tax_rate,
+//       tax_amount: row.tax_amount,
+//       total: row.total,
+//       status: row.status,
+//       notes: row.notes,
+//       created_at: row.created_at,
+//       updated_at: row.updated_at,
+//       salesperson_id: row.salesperson_id ?? null,
+//       customer: row.customer_id
+//         ? {
+//             id: row.customer_id,
+//             name: row.customer_name,
+//             phone: row.customer_phone,
+//             email: row.customer_email,
+//           }
+//         : null,
+
+//       vehicle: vehicle
+//         ? {
+//             id: vehicle.id,
+//             year: vehicle.year,
+//             make: vehicle.make,
+//             model: vehicle.model,
+//             vin: vehicle.vin,
+//             odometer: vehicle.odometer,
+//             status: vehicle.status,
+//             retail_price: vehicle.retail_price,
+//           }
+//         : null,
+
+//       line_items: (lineItems ?? [])
+//         .filter(li => li.invoice_id === row.id)
+//         .map(li => ({
+//           description: li.description,
+//           quantity: li.quantity,
+//           unit_price: li.unit_price,
+//           amount: li.amount,
+//         })),
+//     };
+//   });
+
+//   return {
+//     data: result,
+//     total: count ?? 0,
+//     page,
+//     limit,
+//   };
+// }
+
+
 export async function getInvoices(filters?: {
   search?: string;
   status?: string;
@@ -155,12 +315,12 @@ export async function getInvoices(filters?: {
   const to = from + limit - 1;
 
   /* =======================
-     BASE QUERY (VIEW)
+     BASE QUERY
   ======================= */
 
   let query = supabase
     .from("invoices_search")
-    .select("*", { count: "exact" }) // 🔥 IMPORTANT
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false })
     .range(from, to);
 
@@ -205,9 +365,32 @@ export async function getInvoices(filters?: {
   ======================= */
 
   const invoiceIds = data.map(i => i.id);
-  const vehicleIds = data
-    .map(i => i.vehicle_id)
+
+  const dealIds = data
+    .map(i => i.sale_deal_id)
     .filter((id): id is string => !!id);
+
+  /* =======================
+     FETCH SALES DEALS
+  ======================= */
+
+  const { data: deals } = await supabase
+    .from("sales_deals")
+    .select("id, vehicle_id")
+    .in("id", dealIds);
+
+  /* =======================
+     FETCH VEHICLES
+  ======================= */
+
+  const vehicleIds = deals
+    ?.map(d => d.vehicle_id)
+    .filter((id): id is string => !!id) ?? [];
+
+  const { data: vehicles } = await supabase
+    .from("vehicles")
+    .select("id, year, make, model, vin, odometer, status, retail_price")
+    .in("id", vehicleIds);
 
   /* =======================
      FETCH LINE ITEMS
@@ -219,20 +402,12 @@ export async function getInvoices(filters?: {
     .in("invoice_id", invoiceIds);
 
   /* =======================
-     FETCH VEHICLES
-  ======================= */
-
-  const { data: vehicles } = await supabase
-    .from("vehicles")
-    .select("id, year, make, model, vin, odometer, status, retail_price")
-    .in("id", vehicleIds);
-
-  /* =======================
      MAP RESULT
   ======================= */
 
   const result: InvoiceWithRelations[] = data.map((row) => {
-    const vehicle = vehicles?.find(v => v.id === row.vehicle_id) ?? null;
+    const deal = deals?.find(d => d.id === row.sale_deal_id);
+    const vehicle = vehicles?.find(v => v.id === deal?.vehicle_id) ?? null;
 
     return {
       id: row.id,
@@ -240,7 +415,7 @@ export async function getInvoices(filters?: {
       invoice_date: row.invoice_date,
       due_date: row.due_date,
       customer_id: row.customer_id,
-      vehicle_id: row.vehicle_id,
+      vehicle_id: deal?.vehicle_id ?? null, // ✅ FIXED
       package_name: row.package_name,
       payment_amount: row.payment_amount,
       tax_rate: row.tax_rate,
@@ -250,6 +425,7 @@ export async function getInvoices(filters?: {
       notes: row.notes,
       created_at: row.created_at,
       updated_at: row.updated_at,
+      salesperson_id: row.salesperson_id ?? null,
 
       customer: row.customer_id
         ? {
@@ -291,9 +467,6 @@ export async function getInvoices(filters?: {
     limit,
   };
 }
-
-
-
 
 /* ============================================================================
    UPDATE
@@ -472,6 +645,71 @@ export async function markInvoicePaid(id: string) {
 //   return data as InvoiceWithRelations;
 // }
 
+// export async function getInvoiceById(
+//   id: string
+// ): Promise<InvoiceWithRelations & {
+//   total_paid: number;
+//   remaining_amount: number;
+// }> {
+//   const supabase = await createClient();
+
+//   const { data, error } = await supabase
+//     .from('invoices')
+//     .select(`
+//       *,
+//       customer:customers(
+//         id,
+//         name,
+//         phone,
+//         email
+//       ),
+//       line_items:invoice_line_items(
+//         description,
+//         quantity,
+//         unit_price,
+//         amount
+//       ),
+//       transactions:financial_transactions(
+//         id,
+//         transaction_type,
+//         category,
+//         amount,
+//         payment_method,
+//         reference_id,
+//         notes,
+//         transaction_date,
+//         created_by,
+//         created_at
+//       )
+//     `)
+//     .eq('id', id)
+//     .order('transaction_date', {
+//       foreignTable: 'transactions',
+//       ascending: false,
+//     })
+//     .maybeSingle();
+
+//   if (error || !data) {
+//     console.error('[GET_INVOICE_BY_ID]', error);
+//     throw new Error('Invoice not found');
+//   }
+
+//   const transactions = data.transactions ?? [];
+
+//   const totalPaid = transactions
+//     .filter((t:any) => t.transaction_type === 'Income')
+//     .reduce((acc:number, t:any) => acc + Number(t.amount), 0);
+
+//   const remainingAmount = Math.max(Number(data.total) - totalPaid, 0);
+
+//   return {
+//     ...data,
+//     total_paid: Number(totalPaid.toFixed(2)),
+//     remaining_amount: Number(remainingAmount.toFixed(2)),
+//   };
+// }
+
+
 export async function getInvoiceById(
   id: string
 ): Promise<InvoiceWithRelations & {
@@ -481,34 +719,48 @@ export async function getInvoiceById(
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('invoices')
-    .select(`
-      *,
-      customer:customers(
+  .from('invoices')
+  .select(`
+    *,
+    customer:customers(
+      id,
+      name,
+      phone,
+      email
+    ),
+    sales_deal:sales_deals(
+      id,
+      vehicle_id,
+      vehicle:vehicles(
         id,
-        name,
-        phone,
-        email
-      ),
-      line_items:invoice_line_items(
-        description,
-        quantity,
-        unit_price,
-        amount
-      ),
-      transactions:financial_transactions(
-        id,
-        transaction_type,
-        category,
-        amount,
-        payment_method,
-        reference_id,
-        notes,
-        transaction_date,
-        created_by,
-        created_at
+        year,
+        make,
+        model,
+        vin,
+        odometer,
+        status,
+        retail_price
       )
-    `)
+    ),
+    line_items:invoice_line_items(
+      description,
+      quantity,
+      unit_price,
+      amount
+    ),
+    transactions:financial_transactions(
+      id,
+      transaction_type,
+      category,
+      amount,
+      payment_method,
+      reference_id,
+      notes,
+      transaction_date,
+      created_by,
+      created_at
+    )
+  `)
     .eq('id', id)
     .order('transaction_date', {
       foreignTable: 'transactions',
@@ -521,16 +773,31 @@ export async function getInvoiceById(
     throw new Error('Invoice not found');
   }
 
+  /* =======================
+     CALCULATIONS
+  ======================= */
+
   const transactions = data.transactions ?? [];
 
   const totalPaid = transactions
-    .filter((t:any) => t.transaction_type === 'Income')
-    .reduce((acc:number, t:any) => acc + Number(t.amount), 0);
+    .filter((t: any) => t.transaction_type === 'Income')
+    .reduce((acc: number, t: any) => acc + Number(t.amount), 0);
 
   const remainingAmount = Math.max(Number(data.total) - totalPaid, 0);
 
+  /* =======================
+     EXTRACT VEHICLE
+  ======================= */
+
+  const vehicle = data.sales_deal?.vehicle ?? null;
+
+  /* =======================
+     FINAL RETURN
+  ======================= */
+
   return {
     ...data,
+    vehicle, // ✅ now available in UI directly
     total_paid: Number(totalPaid.toFixed(2)),
     remaining_amount: Number(remainingAmount.toFixed(2)),
   };

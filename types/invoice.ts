@@ -29,6 +29,7 @@ export interface Invoice {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  salesperson_id: string | null;
 }
 
 // CREATE
@@ -134,6 +135,7 @@ export const invoiceObjectSchema = z.object({
 
   status: z.enum(INVOICE_STATUSES),
   notes: z.string().nullable().optional(),
+  salesperson_id: z.string().uuid().nullable().optional(),
 });
 
 /* ============================================================================
@@ -223,6 +225,7 @@ export interface CreateInvoicePayload {
 
   status: InvoiceStatus;
   notes: string | null;
+  salesperson_id: string | null
 }
 
 // types/invoice.ts
@@ -245,6 +248,7 @@ export type UpdateInvoicePayload = {
 
   status?: InvoiceStatus;
   notes?: string | null;
+  salesperson_id?: string | null;  
 };
 
 export type CreateFinancialTransactionPayload = {

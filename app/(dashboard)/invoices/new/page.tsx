@@ -12,7 +12,7 @@ import { useLeads } from '@/hooks/use-leads';
 
 import { useCreateInvoice } from '@/hooks/use-invoices';
 
-import { Form } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { InvoiceDetailsCard } from '@/components/invoices/invoice-detals-card';
 import { CustomerVehicleSelect } from '@/components/invoices/selector';
@@ -25,16 +25,30 @@ import { Customer } from '@/types/customers';
 import { Vehicle } from '@/types/inventory';
 import { useDebounce } from "@/hooks/use-debounce";
 import { useInventory } from '@/hooks/use-inventory';
+import { useAssignableUsers} from "@/hooks/use-users";
+import { useAuth } from '@/contexts/authContext';
 import { VehicleSelector } from '@/components/invoices/vehicle-selector';
+import { Select } from '@/components/ui/select'
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User } from '@/types/user';
 
 export default function NewInvoicePage() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+const user = useAuth()
+const { data: usersResponse } = useAssignableUsers();
+
+
+const users= usersResponse?.data || [];
+
+const staffUsers = users.filter((user: User) => user.role === 'Staff');
+console.log(staffUsers);
 
   const debouncedSearch = useDebounce(search, 400); // 300–500ms best
   // Data fetching
   const { data: customerResponse, isLoading: isLoadingCustomers } = useCustomers();
   const { data: vehiclesResponse, isLoading: isLoadingVehicles } = useInventory({ status: "Active", search: debouncedSearch });
+console.log(user);
 
   const vehicles = vehiclesResponse?.data ?? [];
   const customers = customerResponse?.data ?? [];
@@ -57,6 +71,7 @@ export default function NewInvoicePage() {
       line_items: [],
       status: 'Pending',
       notes: '',
+      salesperson_id: null,
     },
   });
 
@@ -84,6 +99,15 @@ const handleVehicleChange = (vehicle?: { retail_price: number }) => {
       toast.error('Please select a customer');
       return;
     }
+    let salesperson_id = data.salesperson_id ?? null;
+
+if (
+  (user?.role === "Admin" || user?.role === "Manager") &&
+  !data.salesperson_id
+) {
+  toast.error("Please assign a salesperson");
+  return;
+}
 
     const payload: CreateInvoicePayload = {
       invoice_number: data.invoice_number,
@@ -104,6 +128,7 @@ const handleVehicleChange = (vehicle?: { retail_price: number }) => {
       })),
       status: data.status,
       notes: data.notes || null,
+      salesperson_id
     };
 
     createInvoice.mutate(payload, {
@@ -148,18 +173,53 @@ const handleVehicleChange = (vehicle?: { retail_price: number }) => {
                 onVehicleChange={handleVehicleChange}
                 onSearch={(val) => setSearch(val)}
               />
+
+              
       <PricingFeesCard control={form.control} />
+
+      {(user?.role === "Admin" || user?.role === "Manager") && (
+  <FormField
+    control={form.control}
+    name="salesperson_id"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>
+  Assign Salesperson <span className="text-red-500">*</span>
+</FormLabel>
+        <Select onValueChange={field.onChange} value={field.value || ""}>
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select salesperson" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {staffUsers.map((u: User) => (
+              <SelectItem key={u.id} value={u.id}>
+               {u.full_name}
+               {u.role ? ` • ${u.role}` : ""}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </FormItem>
+    )}
+  />
+)}
 
               <LineItemsCard control={form.control} watch={form.watch} />
 <InvoiceNotesCard control={form.control} />
               {/* Submit Button */}
-             <Button
+              <Button
   type="submit"
   className="w-full"
   disabled={
     createInvoice.isPending ||
     !watchedValues.customer_id ||
-    calculation.grandTotal <= 0
+    calculation.grandTotal <= 0 ||
+    (
+      (user?.role === "Admin" || user?.role === "Manager") &&
+      !watchedValues.salesperson_id
+    )
   }
 >
 

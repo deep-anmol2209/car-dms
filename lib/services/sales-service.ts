@@ -73,6 +73,8 @@ export async function getSalesThisMonth() {
     .gte("deal_date", startOfMonth)
 
   if (error) throw error
+  console.log("count: ", count);
+  
 
   return {
     metric: "sales_this_month",

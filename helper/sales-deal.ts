@@ -4,12 +4,19 @@ import { SupabaseClient } from '@supabase/supabase-js';
  * Get existing active sales deal OR create a new one
  * Active = not Cancelled and not Paid Off
  */
-export async function getOrCreateSalesDeal(
-  supabase: SupabaseClient,
-  customerId: string,
-  vehicleId?: string | null,
-  salePrice: number = 0
-): Promise<string | null> {
+export async function getOrCreateSalesDeal({
+  supabase,
+  customerId,
+  vehicleId,
+  salePrice = 0,
+  salesperson_id,
+}: {
+  supabase: SupabaseClient;
+  customerId: string;
+  vehicleId?: string | null;
+  salePrice?: number;
+  salesperson_id?: string ;
+}): Promise<string | null> {
   if (!vehicleId) return null;
 
   /* ------------------------------------------------------------
@@ -43,6 +50,7 @@ export async function getOrCreateSalesDeal(
       deal_status: 'Negotiation',
       sale_price: salePrice,   // can be updated later
       paid_amount: 0,
+      salesperson_id: salesperson_id,
       deal_date: new Date().toISOString(),
     })
     .select('id')

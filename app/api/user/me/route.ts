@@ -8,7 +8,7 @@ import { updateCurrentUserProfile } from "@/lib/actions/user";
 export async function GET() {
   try {
    const user = await getCurrentUserProfile();
-   console.log("hlo");
+ 
    
   //  console.log(user);
    

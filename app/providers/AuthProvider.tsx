@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
@@ -48,7 +49,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) return;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+    
 
       const { data } = await supabase
         .from("users")
@@ -61,6 +66,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         full_name: data?.full_name,
         email: session.user.email,
       });
+
+      setLoading(false)
     };
 
     getSession();
