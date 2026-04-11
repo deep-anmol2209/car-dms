@@ -225,7 +225,7 @@ export interface CreateInvoicePayload {
 
   status: InvoiceStatus;
   notes: string | null;
-  salesperson_id: string | null
+  salesperson_id?: string | null
 }
 
 // types/invoice.ts

@@ -75,6 +75,9 @@ export async function POST(req: NextRequest) {
 
       status: parsed.status,
       notes: parsed.notes ?? null,
+
+
+      
     });
 
     return NextResponse.json(invoice, { status: 201 });
