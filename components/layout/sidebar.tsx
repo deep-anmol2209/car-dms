@@ -101,7 +101,7 @@ const navigationSections = [
     title: "System",
     items: [
       { name: "Social Posting", href: "/social", icon: Share2 },
-      { name: "API Testing", href: "/api-testing", icon: FlaskConical },
+      // { name: "API Testing", href: "/api-testing", icon: FlaskConical },
 
       { name: "Users", href: "/users", icon: UserCog, roles: ["Admin"] },
       { name: "Settings", href: "/settings", icon: Settings, roles: ["Admin"] },
