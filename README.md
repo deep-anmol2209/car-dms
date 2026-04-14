@@ -259,6 +259,55 @@ See `supabase/migrations/20240101_production_security.sql` for complete policy d
 - Performance metrics
 - Error reporting
 
+## 🤖 AI Inventory Agent (Automated Restock System)
+
+The system includes an AI-powered inventory monitoring agent that automatically analyzes vehicle stock and sales trends to recommend restocking.
+
+- Intelligent restock decisions using AI (Gemini API)
+- Automated email alerts for low-stock vehicles
+- Sales-based inventory analysis (last 7 days)
+- Priority-based recommendations (High / Medium / Low)
+- Fully automated background execution via cron jobs
+
+---
+
+### ⚙️ How It Works
+
+1. Fetches inventory insights (stock + sales data)
+2. Sends data to AI decision engine
+3. Determines whether to:
+   - RESTOCK
+   - IGNORE
+4. Sends alert email if restock is required
+
+---
+
+### ⏱️ Cron Job Setup (Local / Server)
+
+The inventory agent runs automatically using a cron job.
+
+```ts
+cron.schedule("0 0 * * *", async () => {
+  await runInventoryAgent()
+})
+
+Runs every 24 hours at midnight
+
+▶️ Running the Worker
+npx tsx worker/inventory-job.ts
+
+⚠️ Important: The worker process must be running continuously for cron jobs to execute.
+
+🔐 Environment Variables Required
+GEMINI_API_KEY=your_gemini_api_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+⚠️ Important Notes
+Uses Supabase Admin client (no cookies / request context required)
+AI calls are rate-limited → controlled execution recommended
+Not supported on serverless platforms like Vercel (use external cron or VPS)
+Designed for backend/worker environments
+
+
 ## 🐛 Troubleshooting
 
 ### Build Errors
