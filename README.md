@@ -36,26 +36,20 @@ A comprehensive, production-ready Dealer Management System built with Next.js 14
 Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Optional: For server-side operations
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# Optional: App URL (for metadata)
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# AI Configuration (OpenAI)
-OPENAI_API_KEY=your_openai_api_key
-
-# Twilio SMS Configuration
-TWILIO_ACCOUNT_SID=your_twilio_account_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_PHONE_NUMBER=your_twilio_phone_number
-
-# Cron Job Security
-CRON_SECRET=your_random_secret_string_for_cron_protection
+NEXT_PUBLIC_BASE_URL
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY
+NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT
+IMAGEKIT_PRIVATE_KEY
+GEMINI_API_KEY
+FACEBOOK_PAGE_ID
+FACEBOOK_ACCESS_TOKEN
+SMTP_HOST
+SMTP_PASSWORD
+SMTP_USERNAME 
+SMTP_PORT
 ```
 
 ### Getting Supabase Credentials
