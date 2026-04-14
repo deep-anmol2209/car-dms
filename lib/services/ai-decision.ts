@@ -11,43 +11,49 @@ function cleanJSON(text: string) {
     .trim()
 }
 
-export async function getRestockDecision(data: any) {
+/* -------------------------------------------------------------------------- */
+/*                     BATCH RESTOCK DECISION (IMPORTANT)                      */
+/* -------------------------------------------------------------------------- */
+
+export async function getBatchRestockDecision(cars: any[]) {
+  if (!cars.length) return []
+
   const prompt = `
 You are an inventory decision system.
 
-Input:
-${JSON.stringify(data)}
+Input (array of cars):
+${JSON.stringify(cars)}
 
 Rules:
-- If stock < 3 AND sales > 5 → HIGH priority restock
-- If stock < 3 → MEDIUM
+- If currentStock < 3 AND salesLast7Days > 5 → HIGH
+- If currentStock < 3 → MEDIUM
 - Else → IGNORE
 
-Return ONLY JSON:
-{
-  "action": "RESTOCK" | "IGNORE",
-  "priority": "HIGH" | "MEDIUM" | "LOW",
-  "recommendedQty": number,
-  "reason": string
-}
+Return ONLY JSON ARRAY:
+[
+  {
+    "model": string,
+    "action": "RESTOCK" | "IGNORE",
+    "priority": "HIGH" | "MEDIUM" | "LOW",
+    "recommendedQty": number,
+    "reason": string
+  }
+]
 `
 
-const res = await ai.models.generateContent({
-  model: "gemini-1.5-flash",
-  contents: prompt,
-})
+  const res = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+  })
 
-const text = res.text
+  const text = res.text
 
-if (!text) {
-  throw new Error("AI returned empty response")
-}
+  if (!text) throw new Error("AI returned empty response")
 
-try {
-  return JSON.parse(cleanJSON(text))
-} catch (err) {
-  console.error("Invalid AI JSON:", text)
-  throw new Error("Failed to parse AI response")
-}
-  
+  try {
+    return JSON.parse(cleanJSON(text))
+  } catch (err) {
+    console.error("Invalid AI JSON:", text)
+    throw new Error("Failed to parse AI response")
+  }
 }

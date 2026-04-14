@@ -22,6 +22,8 @@ export async function getTotalCompletedSales() {
   return {
     metric: "total_completed_sales",
     value: count ?? 0,
+    type: "count",
+  unit: "cars"
   }
 }
 
@@ -48,6 +50,8 @@ export async function getTotalSalesRevenue() {
   return {
     metric: "total_sales_revenue",
     value: revenue,
+    type: "currency",
+  currency: "INR"
   }
 }
 
@@ -79,6 +83,8 @@ export async function getSalesThisMonth() {
   return {
     metric: "sales_this_month",
     value: count ?? 0,
+    type: "count",
+  unit: "cars"
   }
 }
 
@@ -114,6 +120,8 @@ export async function getRevenueThisMonth() {
   return {
     metric: "revenue_this_month",
     value: revenue,
+    type: "currency",
+  currency: "INR"
   }
 }
 
