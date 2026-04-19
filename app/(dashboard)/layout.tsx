@@ -12,7 +12,7 @@ export default function DashboardLayout({
   return(
     
     <>
-    <MainLayout>{children}</MainLayout>;
+    <MainLayout>{children}</MainLayout>
 <AIFloatingButton/>
     </>
   )

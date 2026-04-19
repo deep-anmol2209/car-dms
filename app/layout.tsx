@@ -55,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-  <body className={`${inter.className} min-h-[100dvh] overflow-x-hidden`}>
+<body className={`${inter.className} min-h-[100dvh] overflow-x-hidden`}>
         <Providers>
 
       <ThemeProvider
@@ -73,5 +73,5 @@ export default function RootLayout({
   
       </body>
     </html>
-  );
+  )
 }

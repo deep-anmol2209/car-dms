@@ -51,34 +51,7 @@ function useWindowSize() {
   return windowSize;
 }
 
-// const navigationSections = [
-//   {
-//     title: "Main",
-//     items: [
-//       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-//       { name: "Inventory", href: "/inventory", icon: Car },
-//       { name: "Leads", href: "/leads", icon: Users },
-//     ],
-//   },
-//   {
-//     title: "Management",
-//     items: [
-//       { name: "Test Drives", href: "/testdrives", icon: TestTube },
-//       { name: "Customers", href: "/customers", icon: Users },
-//       { name: "Invoices", href: "/invoices", icon: Receipt },
-//       { name: "Reports", href: "/reports", icon: BarChart3 },
-//     ],
-//   },
-//   {
-//     title: "System",
-//     items: [
-//       { name: "Social Posting", href: "/social", icon: Share2 },
-//       { name: "API Testing", href: "/api-testing", icon: FlaskConical },
-//       { name: "Users", href: "/users", icon: UserCog },
-//       { name: "Settings", href: "/settings", icon: Settings },
-//     ],
-//   },
-// ];
+
 const navigationSections = [
   {
     title: "Main",
@@ -304,5 +277,5 @@ export function Sidebar() {
         </div>
       </div>
     </>
-  );
+  )
 }
