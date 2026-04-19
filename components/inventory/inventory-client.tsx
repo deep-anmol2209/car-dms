@@ -277,7 +277,7 @@ export default function InventoryPage({ analytics }: { analytics: InventoryAnaly
                   <TableHead className="text-right">Total Cost</TableHead>
                   <TableHead className="text-right">Retail</TableHead>
                   <TableHead className="text-right">Est. Profit</TableHead>
-                  <TableHead className="text-center">Online</TableHead>
+                 
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -312,9 +312,7 @@ export default function InventoryPage({ analytics }: { analytics: InventoryAnaly
                       <TableCell className={`text-right font-mono text-sm font-medium ${grossProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
                         ${grossProfit.toLocaleString()}
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Switch defaultChecked={vehicle.status === "Active"} />
-                      </TableCell>
+                    
                       <TableCell className="text-right">
                         <VehicleActionsMenu vehicleId={vehicle.id} />
                       </TableCell>
