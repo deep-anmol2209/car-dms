@@ -58,12 +58,57 @@ console.log(user);
   };
   if (isLoading || userLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">Loading settings...</p>
+      <div className="p-6 space-y-6 animate-pulse">
+      
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div className="h-8 w-40 bg-muted rounded-md" />
+        <div className="h-10 w-36 bg-muted rounded-md" />
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2">
+        <div className="h-10 w-40 bg-muted rounded-md" />
+        <div className="h-10 w-40 bg-muted rounded-md" />
+      </div>
+
+      {/* Card */}
+      <div className="border rounded-xl p-6 space-y-6">
+        
+        {/* Card Header */}
+        <div className="space-y-2">
+          <div className="h-6 w-48 bg-muted rounded-md" />
+          <div className="h-4 w-72 bg-muted rounded-md" />
+        </div>
+
+        {/* Form Fields */}
+        <div className="space-y-4">
+          
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-muted rounded-md" />
+            <div className="h-10 w-full bg-muted rounded-md" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-muted rounded-md" />
+            <div className="h-10 w-full bg-muted rounded-md" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-muted rounded-md" />
+            <div className="h-10 w-full bg-muted rounded-md" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-4 w-32 bg-muted rounded-md" />
+            <div className="h-24 w-full bg-muted rounded-md" />
+          </div>
+
+          {/* Button */}
+          <div className="h-10 w-32 bg-muted rounded-md" />
         </div>
       </div>
+    </div>
     );
   }
 

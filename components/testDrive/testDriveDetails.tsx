@@ -1,18 +1,17 @@
+
 "use client";
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Car,
   User,
@@ -21,7 +20,6 @@ import {
   FileText,
   Phone,
   CheckCircle2,
-  MapPin,
   Calendar,
   ShieldCheck,
   AlertCircle,
@@ -40,17 +38,16 @@ import toast from "react-hot-toast";
 const StatusBadge = ({ status }: { status: string }) => {
   const isOngoing = status === "Ongoing";
   const styles = isOngoing
-    ? "bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100"
-    : "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100";
-
+    ? "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50"
+    : "bg-green-50 text-green-700 border-green-200 hover:bg-green-50";
   const Icon = isOngoing ? Clock : CheckCircle2;
 
   return (
     <Badge
       variant="outline"
-      className={`px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 ${styles}`}
+      className={`px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 rounded ${styles}`}
     >
-      <Icon className="w-3.5 h-3.5" />
+      <Icon className="w-3 h-3" />
       {status}
     </Badge>
   );
@@ -63,55 +60,157 @@ const StatusBadge = ({ status }: { status: string }) => {
 export default function TestDriveDetails() {
   const params = useParams();
   const id = params?.id as string;
-const patchTestDrive = usePatchTestDrive();
+  const patchTestDrive = usePatchTestDrive();
 
   const { data: testDrive, isLoading, isError } = useTestDrive(id);
 
-  /* --- Loading State --- */
   if (isLoading) {
     return (
-      <div className="flex h-[50vh] w-full items-center justify-center">
-        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p>Loading details...</p>
+      <div className="flex flex-col h-full min-h-screen bg-muted/30 animate-pulse">
+
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-4 bg-background border-b gap-4">
+          <div className="space-y-2">
+            <div className="h-4 w-40 bg-muted rounded" />
+            <div className="h-3 w-60 bg-muted rounded" />
+          </div>
+          <div className="h-8 w-24 bg-muted rounded sm:ml-auto" />
+        </div>
+
+        <div className="flex flex-col lg:flex-row flex-1 lg:overflow-hidden">
+
+          {/* Left */}
+          <div className="flex-1 lg:overflow-y-auto p-4 sm:p-6 space-y-5">
+
+            {/* Vehicle */}
+            <div className="border rounded-md p-5 space-y-3 bg-background">
+              <div className="h-3 w-20 bg-muted rounded" />
+              <div className="h-4 w-40 bg-muted rounded" />
+              <div className="h-3 w-52 bg-muted rounded" />
+            </div>
+
+            {/* Driver Card */}
+            <div className="border rounded-md bg-background overflow-hidden">
+
+              {/* Header */}
+              <div className="px-5 py-3 border-b">
+                <div className="h-3 w-24 bg-muted rounded" />
+              </div>
+
+              <div className="flex flex-col md:flex-row md:divide-x divide-y md:divide-y-0">
+
+                {/* Left side */}
+                <div className="flex-1 p-5 space-y-4">
+
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-muted" />
+                    <div className="space-y-2">
+                      <div className="h-3 w-28 bg-muted rounded" />
+                      <div className="h-3 w-36 bg-muted rounded" />
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-muted" />
+
+                  <div className="space-y-3">
+                    <div>
+                      <div className="h-3 w-24 bg-muted rounded mb-1" />
+                      <div className="h-4 w-40 bg-muted rounded" />
+                    </div>
+
+                    <div className="h-8 w-full bg-muted rounded" />
+                  </div>
+                </div>
+
+                {/* Right side (image) */}
+                <div className="flex-1 p-5 space-y-2">
+                  <div className="h-3 w-28 bg-muted rounded" />
+                  <div className="w-full h-[140px] bg-muted rounded-md" />
+                </div>
+
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="border rounded-md bg-background p-5 space-y-3">
+              <div className="h-3 w-20 bg-muted rounded" />
+              <div className="h-12 w-full bg-muted rounded" />
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="w-full lg:w-72 xl:w-80 border-t lg:border-t-0 lg:border-l bg-background p-5 space-y-6">
+
+            {/* Timeline */}
+            <div className="space-y-4">
+              <div className="h-3 w-24 bg-muted rounded" />
+
+              <div className="flex gap-3">
+                <div className="h-2.5 w-2.5 rounded-full bg-muted mt-1" />
+                <div className="space-y-2">
+                  <div className="h-3 w-20 bg-muted rounded" />
+                  <div className="h-3 w-28 bg-muted rounded" />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <div className="h-2.5 w-2.5 rounded-full bg-muted mt-1" />
+                <div className="space-y-2">
+                  <div className="h-3 w-24 bg-muted rounded" />
+                  <div className="h-3 w-20 bg-muted rounded" />
+                </div>
+              </div>
+            </div>
+
+            {/* Sales */}
+            <div className="space-y-3">
+              <div className="h-3 w-32 bg-muted rounded" />
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-muted" />
+                <div className="space-y-1">
+                  <div className="h-3 w-24 bg-muted rounded" />
+                  <div className="h-3 w-16 bg-muted rounded" />
+                </div>
+              </div>
+            </div>
+
+            {/* Signature */}
+            <div className="space-y-3">
+              <div className="h-3 w-32 bg-muted rounded" />
+              <div className="h-16 w-full bg-muted rounded" />
+              <div className="h-3 w-40 bg-muted rounded mx-auto" />
+            </div>
+
+          </div>
         </div>
       </div>
     );
   }
-const handleEndDrive = () => {
-  if (!id) return;
 
-  patchTestDrive.mutate({
-    id,
-    data: {
-      end_time: new Date().toISOString(),
-    
-    },
-     
-  },{
-    onSuccess: () => {
-      toast.success("Test drive ended successfully");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-};
+  const handleEndDrive = () => {
+    if (!id) return;
+    patchTestDrive.mutate(
+      { id, data: { end_time: new Date().toISOString() } },
+      {
+        onSuccess: () => toast.success("Test drive ended successfully"),
+        onError: (error) => toast.error(error.message),
+      }
+    );
+  };
 
-  /* --- Error State --- */
   if (isError || !testDrive) {
     return (
       <div className="flex h-[50vh] w-full items-center justify-center">
-        <Card className="border-destructive/50 bg-destructive/5 max-w-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-destructive">
-              <AlertCircle className="h-5 w-5" />
-              Error Loading Data
+        <Card className="border-destructive/30 bg-destructive/5 max-w-sm w-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              Error loading data
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              We couldn&apos;t retrieve the test drive information. Please try again later.
+              Couldn&apos;t retrieve test drive information. Please try again.
             </p>
           </CardContent>
         </Card>
@@ -119,7 +218,6 @@ const handleEndDrive = () => {
     );
   }
 
-  /* --- Data Processing --- */
   const status = getTestDriveStatus(testDrive);
   const isOngoing = status === "Ongoing";
 
@@ -136,275 +234,269 @@ const handleEndDrive = () => {
       .slice(0, 2)
       .join("") ?? "SP";
 
-  /* --- Render --- */
   return (
-    <div className="min-h-screen bg-muted/20 p-4 md:p-8">
-      <div className="mx-auto max-w-6xl space-y-8 animate-in fade-in duration-500">
-        
-        {/* ================= Header Section ================= */}
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                Test Drive #{testDrive.id.slice(-6).toUpperCase()}
-              </h1>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>Created on {formatDate(testDrive.created_at)}</span>
-              <span>•</span>
-              <span>ID: {testDrive.id}</span>
-            </div>
-          </div>
+    <div className="flex flex-col h-full min-h-screen bg-muted/30">
 
-          {/* Top Right Actions */}
-          <div className="flex items-center gap-3 bg-background p-2 rounded-lg border shadow-sm">
-            <StatusBadge status={status} />
-            {isOngoing && (
-              <>
-                <Separator orientation="vertical" className="h-6" />
-                <Button
-  variant="destructive"
-  size="sm"
-  className="shadow-sm"
-  disabled={patchTestDrive.isPending}
-  onClick={handleEndDrive}
->
-  <StopCircle className="mr-2 h-4 w-4" />
-  {patchTestDrive.isPending ? "Ending..." : "End Drive"}
-</Button>
-              </>
-            )}
+      {/* ── Top Header Bar ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-4 bg-background border-b shrink-0 gap-4 sm:gap-2">
+        <div>
+          <h1 className="text-base font-semibold tracking-tight">
+            Test Drive #{testDrive.id.slice(-6).toUpperCase()}
+          </h1>
+          <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+            <Calendar className="h-3 w-3" />
+            <span>Created {formatDate(testDrive.created_at)}</span>
           </div>
         </div>
+        <div className="flex items-center gap-3 sm:gap-2">
+          <StatusBadge status={status} />
+          {isOngoing && (
+            <>
+              <Separator orientation="vertical" className="h-5 hidden sm:block" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive border-destructive/30 hover:bg-destructive/5 hover:border-destructive/50 text-xs h-8 ml-auto sm:ml-0"
+                disabled={patchTestDrive.isPending}
+                onClick={handleEndDrive}
+              >
+                <StopCircle className="mr-1.5 h-3.5 w-3.5" />
+                {patchTestDrive.isPending ? "Ending..." : "End drive"}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
 
-        {/* ================= Main Dashboard Grid ================= */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          
-          {/* LEFT COLUMN (2/3 width) */}
-          <div className="space-y-6 lg:col-span-2">
-            
-            {/* 1. Hero Vehicle Card */}
-            <Card className="overflow-hidden border-none shadow-md ring-1 ring-slate-900/5">
-              <div className="relative overflow-hidden bg-slate-900 p-8 text-white">
-                {/* Abstract decorative background */}
-                <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-slate-800 opacity-50 blur-3xl" />
-                
-                <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* ── Body ── */}
+      <div className="flex flex-col lg:flex-row flex-1 lg:overflow-hidden">
+
+        {/* Left: scrollable main content */}
+        <div className="flex-1 lg:overflow-y-auto p-4 sm:p-6 space-y-5">
+
+          {/* Vehicle */}
+          <Card className="shadow-none border">
+            <div className="px-5 py-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Car className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Vehicle
+                </span>
+              </div>
+              <h2 className="text-base font-semibold">
+                {testDrive.vehicle.make} {testDrive.vehicle.model}
+              </h2>
+              <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                VIN: {testDrive.vehicle.vin}
+              </p>
+            </div>
+          </Card>
+
+          {/* ── Unified Customer + License Card ── */}
+          <Card className="shadow-none border overflow-hidden">
+
+            {/* Section label */}
+            <div className="px-5 pt-4 pb-3 border-b">
+              <div className="flex items-center gap-2">
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Driver
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:divide-x divide-y md:divide-y-0">
+
+              {/* Left half: Customer info */}
+              <div className="flex-1 px-5 py-4 space-y-4">
+                {/* Avatar + name */}
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-blue-50 text-blue-700 text-sm font-semibold">
+                      {customerInitials}
+                    </AvatarFallback>
+                  </Avatar>
                   <div>
-                    <div className="mb-2 flex items-center gap-2 text-slate-400">
-                      <Car className="h-5 w-5" />
-                      <span className="text-sm font-medium uppercase tracking-wider">
-                        Vehicle Details
-                      </span>
-                    </div>
-                    <h2 className="text-3xl font-bold">
-                      {testDrive.vehicle.make} {testDrive.vehicle.model}
-                    </h2>
-                    <p className="mt-1 font-mono text-sm text-slate-400 opacity-80">
-                      VIN: {testDrive.vehicle.vin}
+                    <p className="text-sm font-semibold leading-tight">
+                      {testDrive.customer.name}
                     </p>
-                  </div>
-                  {/* Placeholder for Vehicle Image if you had one, otherwise stylized icon */}
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-                    <Car className="h-8 w-8 text-white" />
+                    <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
+                      <Phone className="h-3 w-3" />
+                      {testDrive.customer.phone}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
 
-            {/* 2. Customer & License Grid */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* Customer Card */}
-              <Card className="h-full shadow-sm transition-all hover:shadow-md">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base text-muted-foreground">
-                    <User className="h-4 w-4" />
-                    Customer Profile
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16 border-2 border-background shadow-sm">
-                      <AvatarFallback className="bg-primary/10 text-xl font-bold text-primary">
-                        {customerInitials}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <p className="font-bold text-lg leading-none">
-                        {testDrive.customer.name}
-                      </p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="h-3 w-3" />
-                        {testDrive.customer.phone}
-                      </div>
-                      <Badge variant="secondary" className="mt-2 text-xs font-normal">
-                        Verified Customer
-                      </Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                <Separator />
 
-              {/* License Card */}
-              <Card className="h-full shadow-sm transition-all hover:shadow-md">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base text-muted-foreground">
-                    <CreditCard className="h-4 w-4" />
-                    License Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                {/* License meta */}
+                <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">License Number</p>
-                    <p className="font-mono text-base font-semibold tracking-wide">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
+                      License number
+                    </p>
+                    <p className="font-mono text-sm font-medium">
                       {testDrive.driver_license_number}
                     </p>
                   </div>
-                  
-                  <div className="flex items-center justify-between rounded-md bg-muted/40 p-2 text-sm">
-                    <span className="text-muted-foreground">Expires:</span>
+                  <div className="flex items-center justify-between rounded-md bg-muted/40 border px-3 py-2 text-xs">
+                    <span className="text-muted-foreground">Expires</span>
                     <span className="font-medium">
                       {formatDate(testDrive.driver_license_expiry)}
                     </span>
                   </div>
 
-                  {testDrive.driver_license && (
-                    <div className="group relative mt-2 overflow-hidden rounded-md border shadow-sm">
-                      <Image
-                      width={100}
-                      height={100}
-                        src={testDrive.driver_license.imageUrl}
-                        alt="License Preview"
-                        className="h-24 w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                        <span className="text-xs font-medium text-white">View Full</span>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </div>
 
-            {/* 3. Notes Section */}
-            <Card className="shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4 text-primary" />
-                  Session Notes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {testDrive.notes ? (
-                  <div className="rounded-lg bg-amber-50/50 p-4 text-sm leading-relaxed text-amber-900 border border-amber-100">
-                    {testDrive.notes}
+              {/* Right half: License image */}
+              <div className="flex-1 p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    License image
+                  </span>
+                </div>
+                {testDrive.driver_license?.imageUrl ? (
+                  <div className="relative w-full rounded-md overflow-hidden border" style={{ aspectRatio: "16/10" }}>
+                    <Image
+                      src={testDrive.driver_license.imageUrl}
+                      alt="Driver License"
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 ) : (
-                  <p className="text-sm italic text-muted-foreground">No notes added yet.</p>
+                  <div className="flex flex-1 items-center justify-center rounded-md border border-dashed bg-muted/20 text-xs text-muted-foreground min-h-[120px]">
+                    No license image
+                  </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+              </div>
 
-          {/* RIGHT COLUMN (1/3 width) - Sticky Sidebar */}
-          <div className="space-y-6 lg:col-span-1">
-            
-            {/* Timeline Widget */}
-            <Card className="shadow-md border-l-4 border-l-primary">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Clock className="h-4 w-4 text-primary" />
-                  Timeline
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-6">
-                {/* Start Step */}
-                <div className="relative pl-6">
-                  <div className="absolute left-0 top-1 h-3 w-3 rounded-full border-2 border-primary bg-background" />
-                  <div className="absolute left-[5px] top-4 h-full w-[2px] bg-muted" />
-                  <p className="text-xs font-medium uppercase text-muted-foreground">Started</p>
-                  <p className="text-sm font-medium">
+            </div>
+          </Card>
+
+          {/* Notes */}
+          <Card className="shadow-none border">
+            <CardHeader className="pb-2 pt-4 px-5">
+              <CardTitle className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <FileText className="h-3.5 w-3.5" />
+                Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-5 pb-5">
+              {testDrive.notes ? (
+                <p className="text-sm text-muted-foreground leading-relaxed bg-muted/30 rounded-md px-3 py-2.5 border">
+                  {testDrive.notes}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">No notes added.</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right: fixed sidebar */}
+        <div className="w-full lg:w-72 xl:w-80 shrink-0 border-t lg:border-t-0 lg:border-l bg-background lg:overflow-y-auto pb-10 lg:pb-0">
+
+          {/* Timeline */}
+          <div className="px-5 py-5 border-b">
+            <div className="flex items-center gap-2 mb-4">
+              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                Timeline
+              </span>
+            </div>
+            <div className="space-y-5">
+              <div className="flex gap-3">
+                <div className="flex flex-col items-center">
+                  <div className="h-2.5 w-2.5 rounded-full border-2 border-green-500 bg-green-100 mt-0.5 shrink-0" />
+                  <div className="flex-1 w-px bg-border mt-1 min-h-[32px]" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-0.5">
+                    Started
+                  </p>
+                  <p className="text-sm font-semibold">
                     {formatDate(testDrive.start_time, "h:mm a")}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatDate(testDrive.start_time, "MMM d, yyyy")}
                   </p>
                 </div>
-
-                {/* End Step */}
-                <div className="relative pl-6">
-                  <div className={`absolute left-0 top-1 h-3 w-3 rounded-full border-2 ${isOngoing ? 'border-amber-400 bg-amber-400 animate-pulse' : 'border-primary bg-primary'}`} />
-                  <p className="text-xs font-medium uppercase text-muted-foreground">
-                    {isOngoing ? "In Progress" : "Completed"}
+              </div>
+              <div className="flex gap-3">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`h-2.5 w-2.5 rounded-full border-2 mt-0.5 shrink-0 ${isOngoing
+                      ? "border-amber-400 bg-amber-100"
+                      : "border-green-500 bg-green-100"
+                      }`}
+                  />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-0.5">
+                    {isOngoing ? "In progress" : "Completed"}
                   </p>
-                  {!isOngoing ? (
-                    <div className="space-y-0.5">
-                       <p className="text-sm font-medium">Completed</p>
-                       <p className="text-xs text-muted-foreground">Drive Ended</p>
-                    </div>
+                  {isOngoing ? (
+                    <p className="text-sm text-amber-600 font-medium">Recording…</p>
                   ) : (
-                    <p className="text-sm text-amber-600 font-medium italic">Recording...</p>
+                    <p className="text-sm font-semibold">Drive ended</p>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Salesperson & Signature Widget */}
-            <Card className="shadow-sm">
-              <CardContent className="p-0">
-                {/* Salesperson */}
-                {testDrive.salesperson && (
-                  <div className="p-4">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Sales Representative
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback className="bg-slate-100 text-xs">
-                          {salespersonInitials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {testDrive.salesperson.full_name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">Employee</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <Separator />
-                
-                {/* Signature */}
-                <div className="bg-muted/10 p-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Customer Acceptance
-                  </p>
-                  {testDrive.signature?.imageUrl ? (
-                    <div className="flex items-center justify-center rounded border bg-white p-3">
-                      <Image
-                      width={100}
-                      height={100}
-                        src={testDrive.signature.imageUrl }
-                        alt="Signature"
-                        className="max-h-12 w-auto opacity-80 mix-blend-multiply"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-16 items-center justify-center rounded border border-dashed bg-muted/20 text-xs text-muted-foreground">
-                      No signature recorded
-                    </div>
-                  )}
-                  <div className="mt-2 flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
-                     <ShieldCheck className="h-3 w-3 text-emerald-500" />
-                     <span>Digitally Signed & Verified</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
+
+          {/* Sales Representative */}
+          {testDrive.salesperson && (
+            <div className="px-5 py-5 border-b">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-3">
+                Sales representative
+              </p>
+              <div className="flex items-center gap-2.5">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-muted text-xs font-medium">
+                    {salespersonInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium leading-tight">
+                    {testDrive.salesperson.full_name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Employee</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Signature */}
+          <div className="px-5 py-5">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-3">
+              Customer acceptance
+            </p>
+            {testDrive.signature?.imageUrl ? (
+              <div className="flex items-center justify-center rounded-md border bg-white px-4 py-3">
+                <div className="relative w-full h-16">
+                  <Image
+                    src={testDrive.signature.imageUrl}
+                    alt="Customer Signature"
+                    fill
+                    className="object-contain mix-blend-multiply"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex h-16 items-center justify-center rounded-md border border-dashed bg-muted/20 text-xs text-muted-foreground">
+                No signature recorded
+              </div>
+            )}
+            <div className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+              <ShieldCheck className="h-3 w-3 text-green-500" />
+              Digitally signed &amp; verified
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

@@ -81,8 +81,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* AI Chat Widget - Temporarily disabled until tool API is fixed */}
-      {/* <AnalystChat /> */}
     </div>
   );
 }

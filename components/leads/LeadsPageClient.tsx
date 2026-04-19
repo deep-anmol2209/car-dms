@@ -36,30 +36,73 @@ const { data: leads = [], isFetching,  isLoading } = useLeads(queryFilters);
 
 
 
-  // const filteredLeads = leads.filter((lead) => {
-  //   const matchesSearch =
-  //     filters.search === "" ||
-  //     lead.notes?.toLowerCase().includes(filters.search.toLowerCase()) ||
-  //     lead.customer?.name?.toLowerCase().includes(filters.search.toLowerCase()); // Assumed customer.name based on table
 
-  //   const matchesStatus =
-  //     filters.status === "all" || lead.status === filters.status;
-
-  //   const matchesSource =
-  //     filters.source === "all" || lead.source === filters.source;
-
-  //   return matchesSearch && matchesStatus && matchesSource;
-  // });
 
 if (isLoading && leads.length === 0) {
 
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-         <div className="flex flex-col items-center gap-2">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <p className="text-muted-foreground">Loading leads...</p>
-         </div>
+      <div className="flex-1 space-y-8 p-8 animate-pulse">
+
+      {/* --- Header --- */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-2">
+          <div className="h-8 w-64 bg-muted rounded-md" />
+          <div className="h-4 w-96 bg-muted rounded-md" />
+        </div>
+
+        <div className="h-10 w-40 bg-muted rounded-md" />
       </div>
+
+      {/* Separator */}
+      <div className="h-[1px] w-full bg-muted" />
+
+      {/* --- Stats + Chart --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Stats skeleton */}
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="h-24 rounded-xl bg-muted"
+            />
+          ))}
+        </div>
+
+        {/* Chart skeleton */}
+        <div className="h-64 rounded-xl bg-muted" />
+      </div>
+
+      {/* --- Filters --- */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="h-10 w-full md:w-64 bg-muted rounded-md" />
+        <div className="h-10 w-full md:w-40 bg-muted rounded-md" />
+        <div className="h-10 w-full md:w-40 bg-muted rounded-md" />
+      </div>
+
+      {/* --- Table --- */}
+      <div className="border rounded-xl overflow-hidden">
+        
+        {/* Table Header */}
+        <div className="grid grid-cols-5 gap-4 p-4 border-b">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-4 bg-muted rounded-md" />
+          ))}
+        </div>
+
+        {/* Table Rows */}
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="grid grid-cols-5 gap-4 p-4 border-b last:border-none"
+          >
+            {[...Array(5)].map((_, j) => (
+              <div key={j} className="h-4 bg-muted rounded-md" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
     );
   }
 
@@ -120,10 +163,3 @@ if (isLoading && leads.length === 0) {
 }
 
 
-// export function mapLeadToView(lead: Lead): LeadView {
-//   return {
-//     ...lead,
-//     customer: lead.customer?.name ?? "Unknown",
-//     interest_vehicle: lead.vehicle?.model ?? "N/A",
-//   };
-// }

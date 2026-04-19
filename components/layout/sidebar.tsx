@@ -147,12 +147,7 @@ export function Sidebar() {
           {/* Brand */}
           <div className={cn("flex items-center gap-2 relative z-10 transition-all duration-300 w-full", (isCollapsed && !isMobile) ? "justify-center" : "")}>
             <Logo showText={!isCollapsed || isMobile} />
-            {(!isCollapsed || isMobile) && (
-              <div className="flex flex-col animate-in fade-in duration-300 delay-100 overflow-hidden whitespace-nowrap">
-                <span className="text-sm font-bold gradient-text">Adaptus</span>
-                <span className="text-xs text-muted-foreground">DMS</span>
-              </div>
-            )}
+           
           </div>
         </div>
 

@@ -1,114 +1,4 @@
-// 'use client';
 
-// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
-// import { Share2, Facebook, Instagram, Twitter, Plus } from 'lucide-react';
-
-// export default function SocialPostingPage() {
-//   return (
-//     <div className="p-6">
-//       <div className="flex items-center justify-between mb-6">
-//         <div className="space-y-1">
-//           <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-//             Social Posting
-//           </h1>
-//           <p className="text-muted-foreground text-lg">
-//             Manage social media posts and campaigns
-//           </p>
-//         </div>
-//         <Button>
-//           <Plus className="w-4 h-4 mr-2" />
-//           Create Post
-//         </Button>
-//       </div>
-
-//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-//         <Card>
-//           <CardHeader>
-//             <div className="flex items-center justify-between">
-//               <CardTitle className="flex items-center gap-2">
-//                 <Facebook className="w-5 h-5 text-blue-600" />
-//                 Facebook
-//               </CardTitle>
-//               <Badge variant="outline">Connected</Badge>
-//             </div>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="space-y-4">
-//               <div>
-//                 <p className="text-sm text-slate-500">Posts This Month</p>
-//                 <p className="text-2xl font-bold">12</p>
-//               </div>
-//               <Button variant="outline" className="w-full">
-//                 <Share2 className="w-4 h-4 mr-2" />
-//                 View Posts
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-
-//         <Card>
-//           <CardHeader>
-//             <div className="flex items-center justify-between">
-//               <CardTitle className="flex items-center gap-2">
-//                 <Instagram className="w-5 h-5 text-pink-600" />
-//                 Instagram
-//               </CardTitle>
-//               <Badge variant="outline">Not Connected</Badge>
-//             </div>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="space-y-4">
-//               <div>
-//                 <p className="text-sm text-slate-500">Posts This Month</p>
-//                 <p className="text-2xl font-bold">0</p>
-//               </div>
-//               <Button variant="outline" className="w-full" disabled>
-//                 Connect Account
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-
-//         <Card>
-//           <CardHeader>
-//             <div className="flex items-center justify-between">
-//               <CardTitle className="flex items-center gap-2">
-//                 <Twitter className="w-5 h-5 text-blue-400" />
-//                 Twitter
-//               </CardTitle>
-//               <Badge variant="outline">Not Connected</Badge>
-//             </div>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="space-y-4">
-//               <div>
-//                 <p className="text-sm text-slate-500">Posts This Month</p>
-//                 <p className="text-2xl font-bold">0</p>
-//               </div>
-//               <Button variant="outline" className="w-full" disabled>
-//                 Connect Account
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </div>
-
-//       <Card className="mt-6">
-//         <CardHeader>
-//           <CardTitle>Recent Posts</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-center py-12 text-slate-500">
-//             <p>No posts yet</p>
-//             <p className="text-sm mt-2">Create your first social media post from the Inventory page</p>
-//           </div>
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// }
 "use client";
 
 import { useState } from "react";
@@ -135,6 +25,63 @@ export default function SocialPostingPage() {
   const [openCreatePost, setOpenCreatePost] = useState(false);
 
   const { data: posts, isLoading, error } = useRecentPosts();
+
+  if (isLoading) {
+    return (
+      <div className="w-full px-6 py-6 space-y-6 animate-pulse">
+
+      {/* --- HEADER --- */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="h-4 w-40 bg-muted rounded-md" />
+          <div className="h-8 w-64 bg-muted rounded-md" />
+          <div className="h-4 w-80 bg-muted rounded-md" />
+        </div>
+
+        <div className="h-10 w-40 bg-muted rounded-md" />
+      </div>
+
+      {/* --- CARD --- */}
+      <div className="border rounded-xl p-6 space-y-6">
+
+        {/* Card Header */}
+        <div className="space-y-2">
+          <div className="h-6 w-40 bg-muted rounded-md" />
+          <div className="h-4 w-56 bg-muted rounded-md" />
+        </div>
+
+        {/* --- POSTS GRID --- */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="border rounded-xl overflow-hidden flex flex-col"
+            >
+              {/* Image */}
+              <div className="h-44 w-full bg-muted" />
+
+              {/* Content */}
+              <div className="p-4 space-y-3 flex-1">
+                <div className="h-4 w-32 bg-muted rounded-md" />
+                <div className="h-3 w-full bg-muted rounded-md" />
+                <div className="h-3 w-5/6 bg-muted rounded-md" />
+                <div className="h-3 w-2/3 bg-muted rounded-md" />
+
+                {/* Footer */}
+                <div className="flex justify-between items-center pt-4">
+                  <div className="h-3 w-20 bg-muted rounded-md" />
+                  <div className="h-5 w-16 bg-muted rounded-full" />
+                </div>
+              </div>
+            </div>
+          ))}
+
+        </div>
+      </div>
+    </div>
+    );
+  }
 
   return (
     <div className="w-full px-6 py-6 space-y-6">
@@ -175,11 +122,7 @@ export default function SocialPostingPage() {
 
         <CardContent>
           {/* LOADING */}
-          {isLoading && (
-            <div className="flex justify-center py-20">
-              <Loader2 className="animate-spin w-6 h-6 text-muted-foreground" />
-            </div>
-          )}
+         
 
           {/* ERROR */}
           {error && (

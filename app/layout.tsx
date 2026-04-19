@@ -55,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-     <body className={`${inter.className} h-screen overflow-hidden`}>
+  <body className={`${inter.className} min-h-[100dvh] overflow-x-hidden`}>
         <Providers>
 
       <ThemeProvider

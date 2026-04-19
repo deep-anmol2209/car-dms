@@ -243,15 +243,26 @@ export async function deleteTestDrive(id: string) {
     if (!id) {
       return { success: false, error: "Test drive ID is required" };
     }
+console.log("Delete Test Drive",id);
 
     const supabase = await createClient();
+const { data: existing } = await supabase
+  .from("test_drives")
+  .select("*")
+  .eq("id", id);
 
-    const { error } = await supabase
+if(!existing){
+  return { success: false, error: "Test drive not found" };
+}
+    const { error ,data} = await supabase
       .from("test_drives")
       .delete()
-      .eq("id", id);
+      .eq("id", id)
+      .select()
+      .single();
 
     if (error) throw error;
+    console.log("Deleted Test Drive",data);
 
     revalidatePath("/test-drives");
     return { success: true };

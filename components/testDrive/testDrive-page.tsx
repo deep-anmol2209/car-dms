@@ -58,12 +58,69 @@ export default function TestDrivesClient() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">Loading test drives...</p>
+      <div className="flex-1 space-y-6 p-4 md:p-8 animate-pulse">
+
+      {/* --- Header --- */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-2">
+          <div className="h-8 w-56 bg-muted rounded-md" />
+          <div className="h-4 w-80 bg-muted rounded-md" />
+        </div>
+        <div className="h-10 w-44 bg-muted rounded-md" />
+      </div>
+
+      {/* Separator */}
+      <div className="h-[1px] w-full bg-muted" />
+
+      {/* --- Stats Cards --- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-24 rounded-xl bg-muted"
+          />
+        ))}
+      </div>
+
+      {/* --- Main Card --- */}
+      <div className="border rounded-xl p-6 space-y-6">
+
+        {/* Card Header */}
+        <div className="space-y-2">
+          <div className="h-6 w-48 bg-muted rounded-md" />
+          <div className="h-4 w-72 bg-muted rounded-md" />
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row gap-4 justify-between">
+          <div className="h-10 w-full md:w-72 bg-muted rounded-md" />
+          <div className="h-10 w-40 bg-muted rounded-md" />
+        </div>
+
+        {/* Table */}
+        <div className="border rounded-md overflow-hidden">
+          
+          {/* Table Header */}
+          <div className="grid grid-cols-5 gap-4 p-4 border-b">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-4 bg-muted rounded-md" />
+            ))}
+          </div>
+
+          {/* Table Rows */}
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-5 gap-4 p-4 border-b last:border-none"
+            >
+              {[...Array(5)].map((_, j) => (
+                <div key={j} className="h-4 bg-muted rounded-md" />
+              ))}
+            </div>
+          ))}
         </div>
       </div>
+    </div>
     );
   }
 
