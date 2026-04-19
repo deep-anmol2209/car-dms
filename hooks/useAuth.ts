@@ -130,7 +130,7 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.setQueryData(authKeys.user(), null);
       queryClient.clear(); // 🔥 clears all cached protected data
-      router.push('/login')
+      router.replace('/login')
     },
   });
 }
